@@ -1,0 +1,20 @@
+FROM --platform=$BUILDPLATFORM golang:1.19.2 as builder
+
+WORKDIR /oldgeneral
+
+COPY . .
+
+RUN go mod download -x
+
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o /output/oldgeneral cmd/main.go
+
+FROM gcr.io/distroless/static-debian11
+WORKDIR /
+COPY --from=builder /output/oldgeneral oldgeneral
+
+# Command to run the executable
+USER 65532:65532
+ENTRYPOINT ["/oldgeneral"]
