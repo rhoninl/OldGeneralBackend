@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+    - main
+    - release*
+  paths:
+    exclude:
+    - docs
+    - examples
+    - img
+    - README*
+    - LICENSE
+    - .devcontainer
+    - .github
+    - CHANGELOG
+  tags:
+    include:
+    - '*'
+pr:
+  branches:
+    include:
+    - main
+    - release*
+  paths:
+    exclude:
+    - docs
+    - examples
+    - img
+    - README*
+    - LICENSE
+    - .devcontainer
+    - .github
+    - CHANGELOG
