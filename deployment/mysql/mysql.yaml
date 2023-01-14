@@ -1,0 +1,13 @@
+# source: https://artifacthub.io/packages/helm/bitnami/mysql
+auth:
+  database: oldgeneral
+  username: caocao
+  existingSecret: database-secret
+primary:
+  persistence:
+    enabled: true
+    size: 8Gi
+  service:
+    type: NodePort
+    nodePorts:
+      mysql: 30003

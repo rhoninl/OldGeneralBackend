@@ -1,0 +1,6 @@
+# source: https://artifacthub.io/packages/helm/bitnami/redis
+architecture: standalone
+auth:
+  enabled: true
+  existingSecret: redis-secret
+  existingSecretPasswordKey: redis-password
