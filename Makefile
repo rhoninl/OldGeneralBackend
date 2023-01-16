@@ -4,3 +4,9 @@ build-image:
 	docker buildx build --platform=linux/$(shell go env GOARCH) -f ${PROJECT_ROOT}/dockerfiles/dockerfile \
 	--build-arg PROJECT_ROOT="${PROJECT_ROOT}" ${PROJECT_ROOT} \
 	-t imagenage:version --load
+
+test: fmt
+	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)
+
+fmt:
+	go fmt ./...

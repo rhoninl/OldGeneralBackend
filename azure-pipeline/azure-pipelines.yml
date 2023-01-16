@@ -6,13 +6,9 @@ trigger:
   paths:
     exclude:
     - docs
-    - examples
-    - img
     - README*
     - LICENSE
-    - .devcontainer
     - .github
-    - CHANGELOG
   tags:
     include:
     - '*'
@@ -24,10 +20,17 @@ pr:
   paths:
     exclude:
     - docs
-    - examples
-    - img
     - README*
     - LICENSE
-    - .devcontainer
     - .github
-    - CHANGELOG
+stages:
+  - stage: go_test_and_kind_e2e_test
+    jobs:
+    - job: go_build_and_test
+      steps:
+        - task: GoTool@0
+          inputs:
+            version: '1.19.2'
+        - script: |
+            make test
+          displayName: "go test"
