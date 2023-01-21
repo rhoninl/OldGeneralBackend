@@ -23,7 +23,8 @@ pr:
 
 
 pool:
-   vmImage: 'ubuntu-latest'
+    name: Azure Pipelines
+    vmImage: 'ubuntu-latest'
 
 stages:
 - stage: go_test
