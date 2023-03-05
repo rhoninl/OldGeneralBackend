@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: serviceapi
+  namespace: oldgeneral
+spec:
+  selector:
+    matchLabels:
+      app: serviceapi
+  template:
+    metadata:
+      labels:
+        app: serviceapi
+    spec:
+      containers:
+        - name: serviceapi
+          image: swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceapi:nightly
+          resources:
+          ports:
+            - containerPort: 30001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: serviceapi
+  namespace: oldgeneral
+spec:
+  selector:
+    app: serviceapi
+  ports:
+    - port: 30001
+      targetPort: 30001
+      protocol: TCP
+      nodePort: 30001
+  type: NodePort

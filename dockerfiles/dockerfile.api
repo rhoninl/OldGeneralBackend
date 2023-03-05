@@ -9,12 +9,12 @@ RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o /output/oldgeneral cmd/main.go
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o /output/api cmd/api/api.go
 
 FROM gcr.io/distroless/static-debian11
 WORKDIR /
-COPY --from=builder /output/oldgeneral oldgeneral
+COPY --from=builder /output/api api
 
 # Command to run the executable
 USER 65532:65532
-ENTRYPOINT ["/oldgeneral"]
+ENTRYPOINT ["/api"]
