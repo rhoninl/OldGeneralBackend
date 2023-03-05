@@ -39,4 +39,5 @@ jobs:
         run: |
           make build-protos-go
           make build-image-api
-          docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:nightly
+          docker tag serviceapi:nightly ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
