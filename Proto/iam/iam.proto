@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package iam;
+
+option go_package = "github.com/leepala/OldGeneralBackend/Proto/iam";
+
+service iam {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserReply);
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserReply);
+    rpc SearchUser(SearchUserRequest) returns (SearchUserReply);
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserReply);
+    rpc IAMLogin(IamLoginRequest) returns (IamLoginReply);
+    rpc IAMLogout(IamLogoutRequest) returns (IamLogoutReply);
+}
+
+message CreateUserRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string UserName = 3;
+    string Password = 4;
+}
+
+message CreateUserReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    bool IsSuccess = 3;
+    optional string UserId = 4;
+    optional string Token = 5;
+    optional string Message = 6;
+}
+
+message DeleteUserRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string UserId = 3;
+    string Token = 4;
+}
+
+message DeleteUserReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    bool IsSuccess = 3;
+    optional string Message = 4;
+}
+
+message SearchUserRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string UserId = 3;
+    string UserName = 4;
+    string Password = 5;
+    string Token = 6;
+}
+
+message SearchUserReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    bool IsLegal = 3;
+    optional string Message = 4;
+}
+
+message UpdateUserRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string UserId = 3;
+    string UserName = 4;
+    string Password = 5;
+}
+
+message UpdateUserReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    bool IsSuccess = 3;
+    optional string Message = 4;
+}
+
+message IamLoginRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string UserName = 3;
+    string Password = 4;
+}
+
+message IamLoginReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    string token = 3;
+    optional string message = 4;
+}
+
+message IamLogoutRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string Token = 3;
+}
+
+message IamLogoutReply{
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    bool IsSuccess = 3;
+    optional string Message = 4;
+}
