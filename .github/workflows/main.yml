@@ -3,8 +3,6 @@ name: Build and push Docker image using Buildx
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 env:
   DOCKER_REGISTRY: swr.cn-north-4.myhuaweicloud.com/oldgeneral
