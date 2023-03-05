@@ -10,6 +10,7 @@ import (
 	apipb "github.com/leepala/OldGeneralBackend/Proto/api"
 	"github.com/leepala/OldGeneralBackend/Proto/iam"
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
+	"github.com/leepala/OldGeneralBackend/Proto/userinfo"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -39,6 +40,7 @@ func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iamp
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().Unix(),
 		Token:     "123",
+		UserId:    "test",
 	}
 	return reply, nil
 }
@@ -64,6 +66,24 @@ func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iam.IamCheckStatus
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().Unix(),
 		IsValid:   token != "",
+		UserId:    "testUserId",
+	}
+	return reply, nil
+}
+
+func (s *server) UserInfoGet(ctx context.Context, in *userinfo.GetUserInfoRequest) (*userinfo.GetUserInfoReply, error) {
+	log.Println("get user info request", in.RequestId, in.UserId)
+	reply := &userinfo.GetUserInfoReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().Unix(),
+		UserInfo: &userinfo.UserBasicInfo{
+			UserId:        in.UserId,
+			UserName:      "MrLeea",
+			UserSignature: "不要迷恋哥，哥只是个传说",
+			UserAvatar:    "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/avatars/turtlerock.jpg",
+			UserGender:    "男",
+			UserBirthday:  time.Now().UnixMicro(),
+		},
 	}
 	return reply, nil
 }
