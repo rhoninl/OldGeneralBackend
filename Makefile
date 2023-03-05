@@ -13,9 +13,6 @@ build-image-api:
 test: fmt
 	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)
 
-install-dependencies:
-	make -f Proto/Makefile install-go-dependencies
-
 build-protos:
 	make -f Proto/Makefile build-protos
 
