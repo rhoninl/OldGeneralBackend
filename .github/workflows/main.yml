@@ -2,7 +2,8 @@ name: Build and push Docker image using Buildx
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 env:
   DOCKER_REGISTRY: swr.cn-north-4.myhuaweicloud.com/oldgeneral
@@ -44,5 +45,5 @@ jobs:
         # uses: steebchen/kubectl@7c4c70d551952e40881998b840e16d4d9824a54f
         uses: steebchen/kubectl@v2.1.1
         with:
-          config: ${{ secret.KUBECONFIG }}
+          config: ${{ secrets.KUBECONFIG }}
           command: set image deployment -n oldgeneral serviceapi serviceapi=swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceapi:${{ github.run_id }}
