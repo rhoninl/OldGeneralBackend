@@ -25,6 +25,10 @@ jobs:
       - name: Generating protos
         run: |
           make build-protos-go
+      - name: Go test
+        run: |
+          make test
+
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up QEMU
