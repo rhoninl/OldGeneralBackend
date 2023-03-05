@@ -5,22 +5,26 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.19
-
-    - name: Go test
-      run: |
-        make test
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.20.1
+      - uses: actions/checkout@v3
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+      - name: Installing protobuf dependencies
+        run: |
+          make install-dependencies
+      - name: Generating protos
+        run: |
+          make build-protos-go
+      - name: Go test
+        run: |
+          make test

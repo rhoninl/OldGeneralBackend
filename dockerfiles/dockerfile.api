@@ -4,7 +4,7 @@ WORKDIR /oldgeneral
 
 COPY . .
 
-RUN go mod download -x
+RUN go mod download
 
 ARG TARGETOS
 ARG TARGETARCH
