@@ -7,7 +7,6 @@ option go_package = "github.com/leepala/OldGeneralBackend/Proto/iam";
 service iam {
     rpc CreateUser(CreateUserRequest) returns (CreateUserReply);
     rpc DeleteUser(DeleteUserRequest) returns (DeleteUserReply);
-    rpc SearchUser(SearchUserRequest) returns (SearchUserReply);
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserReply);
     rpc IAMLogin(IamLoginRequest) returns (IamLoginReply);
     rpc IAMLogout(IamLogoutRequest) returns (IamLogoutReply);
@@ -43,22 +42,6 @@ message DeleteUserReply {
     optional string Message = 4;
 }
 
-message SearchUserRequest {
-    string RequestId = 1;
-    int64 RequestTime = 2;
-    string UserId = 3;
-    string UserName = 4;
-    string Password = 5;
-    string Token = 6;
-}
-
-message SearchUserReply {
-    string RequestId = 1;
-    int64 ReplyTime = 2;
-    bool IsLegal = 3;
-    optional string Message = 4;
-}
-
 message UpdateUserRequest {
     string RequestId = 1;
     int64 RequestTime = 2;
@@ -85,7 +68,7 @@ message IamLoginReply {
     string RequestId = 1;
     int64 ReplyTime = 2;
     string token = 3;
-    optional string message = 4;
+    string UserId = 4;
 }
 
 message IamLogoutRequest {
@@ -110,4 +93,5 @@ message IamCheckStatusReply {
     string RequestId = 1;
     int64 ReplyTime = 2;
     bool IsValid = 3;
+    string UserId = 4;
 }

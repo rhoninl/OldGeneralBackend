@@ -2,6 +2,7 @@ syntax = "proto3";
 package api;
 
 import "Proto/iam/iam.proto";
+import "Proto/userinfo/userinfo.proto";
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/api";
 
@@ -10,4 +11,7 @@ service api {
     rpc IAMLogin(iam.IamLoginRequest) returns (iam.IamLoginReply);
     rpc IAMRegister(iam.CreateUserRequest) returns (iam.CreateUserReply);
     rpc IAMCheckLoginStatus(iam.IamCheckStatusRequest) returns (iam.IamCheckStatusReply);
+
+    // userInfo
+    rpc UserInfoGet(userinfo.GetUserInfoRequest) returns (userinfo.GetUserInfoReply);
 }
