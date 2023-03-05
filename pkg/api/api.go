@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"time"
@@ -11,6 +12,7 @@ import (
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type server struct {
@@ -47,6 +49,21 @@ func (s *server) IAMRegister(ctx context.Context, in *iam.CreateUserRequest) (*i
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().Unix(),
 		IsSuccess: true,
+	}
+	return reply, nil
+}
+
+func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iam.IamCheckStatusRequest) (*iam.IamCheckStatusReply, error) {
+	data, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, fmt.Errorf("cannot get metadata")
+	}
+	token := data.Get("authorization")[0]
+	log.Println("check status request", in.RequestId, token)
+	reply := &iam.IamCheckStatusReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().Unix(),
+		IsValid:   token != "",
 	}
 	return reply, nil
 }
