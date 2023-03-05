@@ -19,5 +19,8 @@ install-dependencies:
 build-protos:
 	make -f Proto/Makefile build-protos
 
+build-protos-go:
+	make -f Proto/Makefile build-protos-go
+
 fmt:
 	go fmt ./...

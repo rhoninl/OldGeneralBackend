@@ -24,7 +24,7 @@ jobs:
           make install-dependencies
       - name: Generating protos
         run: |
-          make build-protos
+          make build-protos-go
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up QEMU
