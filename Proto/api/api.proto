@@ -6,6 +6,8 @@ import "Proto/iam/iam.proto";
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/api";
 
 service api {
+    // iam
     rpc IAMLogin(iam.IamLoginRequest) returns (iam.IamLoginReply);
     rpc IAMRegister(iam.CreateUserRequest) returns (iam.CreateUserReply);
+    rpc IAMCheckLoginStatus(iam.IamCheckStatusRequest) returns (iam.IamCheckStatusReply);
 }

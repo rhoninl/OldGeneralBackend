@@ -100,3 +100,14 @@ message IamLogoutReply{
     bool IsSuccess = 3;
     optional string Message = 4;
 }
+
+message IamCheckStatusRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+}
+
+message IamCheckStatusReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
+    bool IsValid = 3;
+}

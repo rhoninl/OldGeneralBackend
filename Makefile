@@ -13,8 +13,7 @@ build-image-api:
 test: fmt
 	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)
 
-build-protos:
-	make -f Proto/Makefile build-protos
+build-protos: build-protos-go build-protos-swift
 
 build-protos-go:
 	protoc --go_out=. \
