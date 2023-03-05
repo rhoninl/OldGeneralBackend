@@ -6,7 +6,7 @@ build-image:
 	-t imagenage:version --load
 
 build-image-api:
-	docker buildx build --platform=linux/amd64 
+	docker buildx build --platform=linux/amd64 \
 	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.api . \
 	-t swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceapi:nightly --load
 
