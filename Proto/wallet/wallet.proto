@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package wallet;
+
+option go_package = "github.com/leepala/OldGeneralBackend/Proto/wallet";
+
+message GetCurrentMoneyRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+}
+
+message GetCurrentMoneyReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+}
+
+message UpdateMoneyRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+    int64 money = 4;
+}
+
+message UpdateMoneyReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+}

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package flags;
+
+import "Proto/cdr/cdr.proto";
+
+option go_package = "github.com/leepala/OldGeneralBackend/Proto/flags";
+
+message SearchMyFlagRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+}
+
+message SearchMyFlagReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    repeated cdr.FlagBasicInfo flags = 4;
+}
+
+message SearchFlagDetailRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string flag_id = 3;
+}
+
+message SearchFlagDetailReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    cdr.FlagDetailInfo info = 3;
+}

@@ -8,9 +8,12 @@ import (
 	"time"
 
 	apipb "github.com/leepala/OldGeneralBackend/Proto/api"
+	"github.com/leepala/OldGeneralBackend/Proto/cdr"
+	"github.com/leepala/OldGeneralBackend/Proto/flags"
 	"github.com/leepala/OldGeneralBackend/Proto/iam"
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
 	"github.com/leepala/OldGeneralBackend/Proto/userinfo"
+	uuid "github.com/satori/go.uuid"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -83,6 +86,57 @@ func (s *server) UserInfoGet(ctx context.Context, in *userinfo.GetUserInfoReques
 			UserAvatar:    "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/avatars/turtlerock.jpg",
 			UserGender:    "男",
 			UserBirthday:  time.Now().UnixMicro(),
+		},
+	}
+	return reply, nil
+}
+
+func (s *server) SearchMyFlag(ctx context.Context, in *flags.SearchMyFlagRequest) (*flags.SearchMyFlagReply, error) {
+	log.Println("get my flag request", in.RequestId, in.UserId)
+	reply := &flags.SearchMyFlagReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().Unix(),
+		Flags: []*cdr.FlagBasicInfo{
+			&cdr.FlagBasicInfo{
+				FlagId:      uuid.NewV4().String(),
+				UserId:      in.UserId,
+				FlagName:    "flag1",
+				FlagStatus:  "running",
+				TotalTime:   100,
+				CurrentTime: 50,
+				StartTime:   time.Now().Unix(),
+			},
+			&cdr.FlagBasicInfo{
+				FlagId:      uuid.NewV4().String(),
+				UserId:      in.UserId,
+				FlagName:    "flag2",
+				FlagStatus:  "banned",
+				TotalTime:   100,
+				CurrentTime: 50,
+				StartTime:   time.Now().Unix(),
+			},
+		},
+	}
+	return reply, nil
+}
+
+func (s *server) SearchFlagDetail(ctx context.Context, in *flags.SearchFlagDetailRequest) (*flags.SearchFlagDetailReply, error) {
+	log.Println("get flag detail request", in.RequestId, in.FlagId)
+	reply := &flags.SearchFlagDetailReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().Unix(),
+		Info: &cdr.FlagDetailInfo{
+			FlagId:       in.FlagId,
+			UserId:       "testUserId",
+			FlagName:     "testFlag",
+			FlagStatus:   "running",
+			TotalTime:    100,
+			CurrentTime:  0,
+			StartTime:    time.Now().Unix(),
+			ChallengeNum: 100,
+			SiegeNum:     399,
+			StarNum:      100,
+			SignUpId:     []string{"123", "456", "789"},
 		},
 	}
 	return reply, nil
