@@ -2,7 +2,11 @@ syntax = "proto3";
 package api;
 
 import "Proto/iam/iam.proto";
+import "Proto/flags/flags.proto";
 import "Proto/userinfo/userinfo.proto";
+import "Proto/wallet/wallet.proto";
+import "Proto/vip/vip.proto";
+import "Proto/message/message.proto";
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/api";
 
@@ -12,6 +16,22 @@ service api {
     rpc IAMRegister(iam.CreateUserRequest) returns (iam.CreateUserReply);
     rpc IAMCheckLoginStatus(iam.IamCheckStatusRequest) returns (iam.IamCheckStatusReply);
 
+    // wallet
+    rpc GetCurrentMoney(wallet.GetCurrentMoneyRequest) returns (wallet.GetCurrentMoneyReply);
+    rpc UpdateMoney(wallet.UpdateMoneyRequest) returns (wallet.UpdateMoneyReply);
+
+    // vip
+    rpc ChargeVipRequesr(vip.ChargeVipRequest) returns (vip.ChargeVipReply);
+    rpc GetVipStatus(vip.GetVipStatusRequest) returns (vip.GetVipStatusReply);
+
     // userInfo
-    rpc UserInfoGet(userinfo.GetUserInfoRequest) returns (userinfo.GetUserInfoReply);
+    rpc GetUserInfo(userinfo.GetUserInfoRequest) returns (userinfo.GetUserInfoReply);
+
+    // message
+    rpc FetchMessage(message.FetchMessageRequest) returns (message.FetchMessageReply);
+    rpc GetRealTimeMessage(message.GetRealTimeMessageRequest) returns (message.GetRealTimeMessageReply);
+
+    // flags
+    rpc SearchMyFlag(flags.SearchMyFlagRequest) returns (flags.SearchMyFlagReply);
+    rpc SearchFlagDetail(flags.SearchFlagDetailRequest) returns (flags.SearchFlagDetailReply);
 }

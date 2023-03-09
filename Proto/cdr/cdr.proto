@@ -1,3 +1,30 @@
 syntax = "proto3";
 
-option go_package = "github.com/leepala/OldGeneralBackend/protobuf/cdr";
+package cdr;
+
+option go_package = "github.com/leepala/OldGeneralBackend/Proto/cdr";
+
+message FlagBasicInfo {
+    string flag_id = 1;
+    string user_id = 2;
+    string flag_name = 3;
+    string flag_status = 4;
+    int64 total_time = 5;
+    int64 current_time = 6;
+    int64 start_time = 7;
+}
+
+message FlagDetailInfo {
+    string flag_id = 1;
+    string user_id = 2;
+    string flag_name = 3;
+    string flag_status = 4;
+    int64 total_time = 5;
+    int64 current_time = 6;
+    int64 start_time = 7;
+    int64 create_time = 8;
+    int64 challenge_num = 9;
+    int64 siege_num = 10;
+    int64 star_num = 11;
+    repeated string sign_up_id = 12;
+}
