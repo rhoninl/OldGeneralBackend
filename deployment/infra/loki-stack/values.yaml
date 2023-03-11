@@ -1,0 +1,5 @@
+loki:
+  isDefault: false
+  persistence:
+    enabled: true
+    size: 100Gi
