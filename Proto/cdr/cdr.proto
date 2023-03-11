@@ -12,6 +12,7 @@ message FlagBasicInfo {
     int64 total_time = 5;
     int64 current_time = 6;
     int64 start_time = 7;
+    int64 pay_money = 8;
 }
 
 message FlagDetailInfo {
