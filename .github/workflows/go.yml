@@ -7,6 +7,10 @@ on:
   push:
     branches: ["main"]
   pull_request:
+    paths-ignore:
+      - "deployment/**"
+      - "docs/**"
+      - "README.md"
     branches: ["main"]
 
 jobs:
