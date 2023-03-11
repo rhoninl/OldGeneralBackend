@@ -1,0 +1,31 @@
+alertmanager:
+  alertmanagerSpec:
+    retention: 720h
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+prometheus:
+  prometheusSpec:
+    retention: 180d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+
+grafana:
+  replicas: 1
+  persistence:
+    enabled: false
+    size: 10Gi
+  deploymentStrategy: { "type": "Recreate" }
+
+global:
+  imageRegistry: "swr.cn-north-4.myhuaweicloud.com/oldgeneral"
