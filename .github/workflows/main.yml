@@ -2,6 +2,10 @@ name: Build and push Docker image using Buildx
 
 on:
   push:
+    paths-ignore:
+      - "deployment/**"
+      - "docs/**"
+      - "README.md"
     branches:
       - main
 
