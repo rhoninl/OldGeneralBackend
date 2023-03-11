@@ -34,4 +34,5 @@ service api {
     // flags
     rpc SearchMyFlag(flags.SearchMyFlagRequest) returns (flags.SearchMyFlagReply);
     rpc SearchFlagDetail(flags.SearchFlagDetailRequest) returns (flags.SearchFlagDetailReply);
+    rpc CreateFlag(flags.CreateFlagRequest) returns (flags.CreateFlagReply);
 }
