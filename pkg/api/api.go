@@ -43,7 +43,7 @@ func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iamp
 	log.Println("login request", in.RequestId, in.UserName, in.Password)
 	reply := &iampb.IamLoginReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().Unix(),
+		ReplyTime: time.Now().UnixMicro(),
 		Token:     "123",
 		UserId:    "test",
 	}
@@ -54,7 +54,7 @@ func (s *server) IAMRegister(ctx context.Context, in *iam.CreateUserRequest) (*i
 	log.Println("regist request", in.RequestId, in.UserName, in.Password)
 	reply := &iam.CreateUserReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().Unix(),
+		ReplyTime: time.Now().UnixMicro(),
 		IsSuccess: true,
 	}
 	return reply, nil
@@ -69,18 +69,18 @@ func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iam.IamCheckStatus
 	log.Println("check status request", in.RequestId, token)
 	reply := &iam.IamCheckStatusReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().Unix(),
+		ReplyTime: time.Now().UnixMicro(),
 		IsValid:   token != "",
 		UserId:    "testUserId",
 	}
 	return reply, nil
 }
 
-func (s *server) UserInfoGet(ctx context.Context, in *userinfo.GetUserInfoRequest) (*userinfo.GetUserInfoReply, error) {
+func (s *server) GetUserInfo(ctx context.Context, in *userinfo.GetUserInfoRequest) (*userinfo.GetUserInfoReply, error) {
 	log.Println("get user info request", in.RequestId, in.UserId)
 	reply := &userinfo.GetUserInfoReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().Unix(),
+		ReplyTime: time.Now().UnixMicro(),
 		UserInfo: &userinfo.UserBasicInfo{
 			UserId:        in.UserId,
 			UserName:      "MrLeea",
@@ -97,25 +97,34 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flags.SearchMyFlagRequest
 	log.Println("get my flag request", in.RequestId, in.UserId)
 	reply := &flags.SearchMyFlagReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().Unix(),
+		ReplyTime: time.Now().UnixMicro(),
 		Flags: []*cdr.FlagBasicInfo{
-			&cdr.FlagBasicInfo{
+			{
 				FlagId:      uuid.NewV4().String(),
 				UserId:      in.UserId,
 				FlagName:    "flag1",
 				FlagStatus:  "running",
 				TotalTime:   100,
 				CurrentTime: 50,
-				StartTime:   time.Now().Unix(),
+				StartTime:   time.Now().UnixMicro(),
 			},
-			&cdr.FlagBasicInfo{
+			{
 				FlagId:      uuid.NewV4().String(),
 				UserId:      in.UserId,
 				FlagName:    "flag2",
 				FlagStatus:  "banned",
 				TotalTime:   100,
 				CurrentTime: 50,
-				StartTime:   time.Now().Unix(),
+				StartTime:   time.Now().UnixMicro(),
+			},
+			{
+				FlagId:      uuid.NewV4().String(),
+				UserId:      in.UserId,
+				FlagName:    "flag3",
+				FlagStatus:  "finished",
+				TotalTime:   100,
+				CurrentTime: 50,
+				StartTime:   time.Now().UnixMicro(),
 			},
 		},
 	}
@@ -159,7 +168,7 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flags.GetFlagDetailReque
 	log.Println("get flag info request", in)
 	reply := &flags.GetFlagDetailReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().Unix(),
+		ReplyTime: time.Now().UnixMicro(),
 		Info: &cdr.FlagDetailInfo{
 			FlagId:       in.FlagId,
 			UserId:       "testUserId",
@@ -167,7 +176,7 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flags.GetFlagDetailReque
 			FlagStatus:   "running",
 			TotalTime:    100,
 			CurrentTime:  0,
-			StartTime:    time.Now().Unix(),
+			StartTime:    time.Now().UnixMicro(),
 			ChallengeNum: 100,
 			SiegeNum:     399,
 			StarNum:      100,
