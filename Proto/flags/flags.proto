@@ -18,13 +18,13 @@ message SearchMyFlagReply {
     repeated cdr.FlagBasicInfo flags = 4;
 }
 
-message SearchFlagDetailRequest {
+message GetFlagDetailRequest {
     string request_id = 1;
     int64 request_time = 2;
     string flag_id = 3;
 }
 
-message SearchFlagDetailReply {
+message GetFlagDetailReply {
     string request_id = 1;
     int64 reply_time = 2;
     cdr.FlagDetailInfo info = 3;
@@ -39,4 +39,17 @@ message CreateFlagRequest {
 message CreateFlagReply {
     string request_id = 1;
     int64 reply_time = 2;
+}
+
+message FetchFlagSquareRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+}
+
+message FetchFlagSquareReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    repeated cdr.FlagSquareItemInfo flags = 3;
 }
