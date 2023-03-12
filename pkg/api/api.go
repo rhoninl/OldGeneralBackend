@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
+	"strconv"
 	"time"
 
 	apipb "github.com/leepala/OldGeneralBackend/Proto/api"
@@ -120,9 +122,42 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flags.SearchMyFlagRequest
 	return reply, nil
 }
 
-func (s *server) SearchFlagDetail(ctx context.Context, in *flags.SearchFlagDetailRequest) (*flags.SearchFlagDetailReply, error) {
-	log.Println("get flag detail request", in.RequestId, in.FlagId)
-	reply := &flags.SearchFlagDetailReply{
+func (s *server) CreateFlag(ctx context.Context, in *flags.CreateFlagRequest) (*flags.CreateFlagReply, error) {
+	log.Println("create flag request", in)
+	reply := &flags.CreateFlagReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}
+
+	return reply, nil
+}
+
+func (s *server) FetchFlagSquare(ctx context.Context, in *flags.FetchFlagSquareRequest) (*flags.FetchFlagSquareReply, error) {
+	log.Println("fetch flag square request", in)
+	reply := &flags.FetchFlagSquareReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}
+	for i := 0; i < int(in.PageSize); i++ {
+		flag := &cdr.FlagSquareItemInfo{
+			SigninId:      uuid.NewV4().String(),
+			UserName:      "MrLeea",
+			FlagName:      "flag" + strconv.Itoa(i),
+			TotalTime:     rand.Int63n(100) + 10,
+			CurrentTime:   rand.Int63n(10),
+			PayMoney:      rand.Int63n(1000),
+			SiegeNum:      rand.Int63n(1000),
+			SigninPicture: "https://img1.baidu.com/it/u=413417701,3210171500&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500",
+		}
+
+		reply.Flags = append(reply.Flags, flag)
+	}
+	return reply, nil
+}
+
+func (s *server) GetFlagDetail(ctx context.Context, in *flags.GetFlagDetailRequest) (*flags.GetFlagDetailReply, error) {
+	log.Println("get flag info request", in)
+	reply := &flags.GetFlagDetailReply{
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().Unix(),
 		Info: &cdr.FlagDetailInfo{

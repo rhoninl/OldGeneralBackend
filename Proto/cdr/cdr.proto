@@ -28,3 +28,14 @@ message FlagDetailInfo {
     int64 star_num = 11;
     repeated string sign_up_id = 12;
 }
+
+message FlagSquareItemInfo {
+    string signin_id = 1;
+    string user_name = 2;
+    string flag_name = 3;
+    int64 total_time = 4;
+    int64 current_time = 5;
+    int64 pay_money = 6;
+    int64 siege_num = 7;
+    string signin_picture = 8;
+}
