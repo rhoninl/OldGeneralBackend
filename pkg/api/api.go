@@ -81,7 +81,7 @@ func (s *server) GetUserInfo(ctx context.Context, in *userinfo.GetUserInfoReques
 	reply := &userinfo.GetUserInfoReply{
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),
-		UserInfo: &userinfo.UserBasicInfo{
+		UserInfo: &cdr.UserBasicInfo{
 			UserId:        in.UserId,
 			UserName:      "MrLeea",
 			UserSignature: "不要迷恋哥，哥只是个传说",
@@ -170,8 +170,9 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flags.GetFlagDetailReque
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),
 		Info: &cdr.FlagDetailInfo{
-			FlagId:       in.FlagId,
-			UserId:       "testUserId",
+			FlagId: in.FlagId,
+			UserId: "testUserId",
+
 			FlagName:     "testFlag",
 			FlagStatus:   "running",
 			TotalTime:    100,

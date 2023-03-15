@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package flags;
-
 import "Proto/cdr/cdr.proto";
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/flags";
@@ -52,4 +51,29 @@ message FetchFlagSquareReply {
     string request_id = 1;
     int64 reply_time = 2;
     repeated cdr.FlagSquareItemInfo flags = 3;
+}
+
+message GetSignInInfoRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string sign_in_id = 3;
+}
+
+message GetSignInInfoReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    cdr.SignInInfo info = 3;
+}
+
+message SignInFlagRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string flag_id = 3;
+    string sign_in_message = 4;
+    string sign_in_picture_url = 5;
+}
+
+message SignInFlagReply {
+    string request_id = 1;
+    int64 reply_time = 2;
 }

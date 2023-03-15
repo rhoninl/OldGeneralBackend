@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package wallet;
+import "Proto/cdr/cdr.proto";
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/wallet";
 
@@ -13,6 +14,7 @@ message GetCurrentMoneyRequest {
 message GetCurrentMoneyReply {
     string request_id = 1;
     int64 reply_time = 2;
+    int64 money = 3;
 }
 
 message UpdateMoneyRequest {
@@ -25,4 +27,18 @@ message UpdateMoneyRequest {
 message UpdateMoneyReply {
     string request_id = 1;
     int64 reply_time = 2;
+}
+
+message GetWaterFlowRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+    int64 page_num = 4;
+    int64 page_size = 5;
+}
+
+message GetWaterFlowReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    repeated cdr.WaterFlow water_flow = 4;
 }
