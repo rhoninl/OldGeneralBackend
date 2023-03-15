@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package userinfo;
+import "Proto/cdr/cdr.proto";
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/userinfo";
 
@@ -13,14 +14,19 @@ message GetUserInfoRequest {
 message GetUserInfoReply {
     string RequestId = 1;
     int64 ReplyTime = 2;
-    optional UserBasicInfo UserInfo = 3;
+    optional cdr.UserBasicInfo UserInfo = 3;
 }
 
-message UserBasicInfo {
-    string UserId = 1;
-    string UserName = 2;
-    string UserAvatar = 3;
-    string UserSignature = 4;
-    string UserGender = 5;
-    int64 UserBirthday = 6;
+message UpdateUserInfoRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    optional string UserName = 3;
+    optional string UserAvatar = 4;
+    optional string UserGender = 5;
+    optional string UserSignature = 6;
+}
+
+message UpdateUserInfoReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
 }

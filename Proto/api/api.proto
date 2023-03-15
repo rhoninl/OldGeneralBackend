@@ -21,11 +21,12 @@ service api {
     rpc UpdateMoney(wallet.UpdateMoneyRequest) returns (wallet.UpdateMoneyReply);
 
     // vip
-    rpc ChargeVipRequesr(vip.ChargeVipRequest) returns (vip.ChargeVipReply);
+    rpc ChargeVipRequest(vip.ChargeVipRequest) returns (vip.ChargeVipReply);
     rpc GetVipStatus(vip.GetVipStatusRequest) returns (vip.GetVipStatusReply);
 
     // userInfo
     rpc GetUserInfo(userinfo.GetUserInfoRequest) returns (userinfo.GetUserInfoReply);
+    rpc UpdateUserInfo(userinfo.UpdateUserInfoRequest) returns (userinfo.UpdateUserInfoReply);
 
     // message
     rpc FetchMessage(message.FetchMessageRequest) returns (message.FetchMessageReply);
@@ -36,4 +37,6 @@ service api {
     rpc GetFlagDetail(flags.GetFlagDetailRequest) returns (flags.GetFlagDetailReply);
     rpc CreateFlag(flags.CreateFlagRequest) returns (flags.CreateFlagReply);
     rpc FetchFlagSquare(flags.FetchFlagSquareRequest) returns (flags.FetchFlagSquareReply);
+    rpc GetSignInInfo(flags.GetSignInInfoRequest) returns (flags.GetSignInInfoReply);
+    rpc SignInFlag(flags.SignInFlagRequest) returns (flags.SignInFlagReply);
 }
