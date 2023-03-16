@@ -17,7 +17,7 @@ import (
 func IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
 	log.Println("login request", in.RequestId, in.UserName)
 	var user = &model.User{}
-	err := database.GetDB().Model(&user).Where("username = ?, password = ?", in.UserName, in.Password).Find(&user).Error
+	err := database.GetDB().Model(&user).Where("username = ? and password = ?", in.UserName, in.Password).Find(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +65,8 @@ func IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.Creat
 	if err != nil {
 		return nil, err
 	}
+
+	reply.IsSuccess = true
 	return reply, nil
 }
 
