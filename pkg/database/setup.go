@@ -33,7 +33,7 @@ func setupSql() *gorm.DB {
 }
 
 func GetDB() *gorm.DB {
-	if db != nil {
+	if db == nil {
 		db = setupSql()
 	}
 

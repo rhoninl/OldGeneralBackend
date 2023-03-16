@@ -38,7 +38,7 @@ func IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginRe
 
 func IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
 	log.Println("regist request", in.RequestId, in.UserName)
-	var counter int64
+	var counter int64 = 1
 	var user = &model.User{
 		ID:       uuid.NewV4().String(),
 		Username: in.UserName,
