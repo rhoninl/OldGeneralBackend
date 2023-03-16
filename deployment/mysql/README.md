@@ -2,8 +2,8 @@
 Create secret to store mysql password
 ```bash
 kubectl create secret generic -n database database-secret \
---from-literal=mysql-root-password=${MYSQL_ROOT_PASSWORD} \
---from-literal=mysql-password=${MSYQL_CUSTOM_PASSWORD}
+--from-literal=mysql-root-password=lanliandedouerdunqieyuma \
+--from-literal=mysql-password=hongliandeguangongzhanchangsha
 ```
 
 install mysql using helm
