@@ -84,8 +84,13 @@ func IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStatusRequest) (
 	token := data.Get("authorization")[0]
 	log.Println("check status request", in.RequestId, token)
 
+	userId, legal := helper.ValidateToken(token)
+	if !legal {
+		return nil, errors.New("token is not valid")
+	}
+
 	var user = &model.User{}
-	err := database.GetDB().Model(user).Where("id = ?", token).Find(&user).Error
+	err := database.GetDB().Model(user).Where("id = ?", userId).Find(&user).Error
 	if err != nil {
 		return nil, err
 	}
