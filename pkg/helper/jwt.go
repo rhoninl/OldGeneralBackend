@@ -16,7 +16,7 @@ func GenerateToken(userId string) (string, error) {
 		"ExpiredAt": time.Now().Add(time.Hour * 24 * 15).Unix(),
 	})
 
-	return token.SignedString(jwtSecret)
+	return token.SignedString([]byte(jwtSecret))
 }
 
 func ValidateToken(token string) (string, bool) {
@@ -25,7 +25,7 @@ func ValidateToken(token string) (string, bool) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return jwtSecret, nil
+		return []byte(jwtSecret), nil
 	})
 
 	if err != nil {
@@ -35,7 +35,7 @@ func ValidateToken(token string) (string, bool) {
 
 	if claims, ok := tokenString.Claims.(jwt.MapClaims); ok &&
 		tokenString.Valid &&
-		claims["ExpiredAt"].(int64) > time.Now().Unix() {
+		claims["ExpiredAt"].(float64) > float64(time.Now().Unix()) {
 		return claims["userId"].(string), true
 	}
 
