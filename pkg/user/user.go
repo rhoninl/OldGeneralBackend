@@ -86,7 +86,7 @@ func (s *server) UpdateUserInfo(ctx context.Context, in *userpb.UpdateUserInfoRe
 		userInfo.Signature = *in.UserSignature
 	}
 
-	err = database.GetDB().Model(&model.UserInfo{}).Where("id  = ?", userId).Save(&userInfo).Error
+	err = database.GetDB().Model(&model.UserInfo{}).Where("id  = ?", userId).Updates(&userInfo).Error
 	if err != nil {
 		log.Printf("cannot update userBasic Info by user id: %s, error: %s", userId, err)
 		return nil, errors.New("Cannot update user")

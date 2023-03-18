@@ -34,6 +34,11 @@ spec:
                 secretKeyRef:
                   name: database-secret
                   key: user_password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
 ---
 apiVersion: v1
 kind: Service
