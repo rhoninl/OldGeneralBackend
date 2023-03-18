@@ -14,9 +14,9 @@ var (
 	grpcIamClient  *iampb.IamClient
 )
 
-func getIamClient() *iampb.IamClient {
+func getIamClient() iampb.IamClient {
 	if grpcIamClient != nil {
-		return grpcIamClient
+		return *grpcIamClient
 	}
 	conn, err := grpc.Dial(grpcIAMAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
@@ -26,7 +26,7 @@ func getIamClient() *iampb.IamClient {
 
 	client := iampb.NewIamClient(conn)
 	grpcIamClient = &client
-	return grpcIamClient
+	return *grpcIamClient
 }
 
 func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
