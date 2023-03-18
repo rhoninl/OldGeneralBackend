@@ -41,7 +41,7 @@ func StartAndListen() {
 func (s *server) GetUserInfo(ctx context.Context, in *userpb.GetUserInfoRequest) (*userpb.GetUserInfoReply, error) {
 	log.Println("login request", in.RequestId, in.UserId)
 	var user = &model.UserInfo{}
-	err := database.GetDB().Model(&user).Where("user_id = ?", in.UserId).Find(&user).Error
+	err := database.GetDB().Model(&user).Where("id = ?", in.UserId).Find(&user).Error
 	if err != nil {
 		log.Printf("cannot get userBasic Info by user id: %s, error: %s", in.UserId, err)
 		return nil, errors.New("Cannot find user")
@@ -67,7 +67,7 @@ func (s *server) UpdateUserInfo(ctx context.Context, in *userpb.UpdateUserInfoRe
 		return nil, errors.New("cannot get user id from context")
 	}
 	userInfo := &model.UserInfo{}
-	err = database.GetDB().Model(&model.UserInfo{}).Where("user_id = ?", userId).Find(&userInfo).Error
+	err = database.GetDB().Model(&model.UserInfo{}).Where("id = ?", userId).Find(&userInfo).Error
 	if err != nil {
 		log.Printf("cannot get userBasic Info by user id: %s, error: %s", userId, err)
 		return nil, errors.New("Cannot find user")
@@ -86,7 +86,7 @@ func (s *server) UpdateUserInfo(ctx context.Context, in *userpb.UpdateUserInfoRe
 		userInfo.Signature = *in.UserSignature
 	}
 
-	err = database.GetDB().Model(&model.UserInfo{}).Where("user_id = ?", userId).Save(&userInfo).Error
+	err = database.GetDB().Model(&model.UserInfo{}).Where("id  = ?", userId).Save(&userInfo).Error
 	if err != nil {
 		log.Printf("cannot update userBasic Info by user id: %s, error: %s", userId, err)
 		return nil, errors.New("Cannot update user")
