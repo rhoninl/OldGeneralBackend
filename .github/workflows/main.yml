@@ -44,16 +44,16 @@ jobs:
           make build-image
           docker tag serviceapi:nightly ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
-          docker tag serviceiam:nightly ${{ env.DOCKER_REGISTRY }}/serviciam:${{ github.run_id }}
+          docker tag serviceiam:nightly ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
 
       - name: Patch ServiceAPI Image tag
         uses: steebchen/kubectl@v2.1.1
         with:
           config: ${{ secrets.KUBECONFIG }}
-          command: set image deployment -n oldgeneral serviceapi serviceapi=swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceapi:${{ github.run_id }}
+          command: set image deployment -n oldgeneral serviceapi ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
       - name: Patch ServiceIAM Image tag
         uses: steebchen/kubectl@v2.1.1
         with:
           config: ${{ secrets.KUBECONFIG }}
-          command: set image deployment -n oldgeneral serviceiam serviceapi=swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceiam:${{ github.run_id }}
+          command: set image deployment -n oldgeneral serviceiam ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
