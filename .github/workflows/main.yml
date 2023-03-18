@@ -47,7 +47,7 @@ jobs:
           docker tag serviceuser:nightly ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
-          docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
 
       - name: Patch ServiceAPI Image tag
         uses: steebchen/kubectl@v2.1.1
