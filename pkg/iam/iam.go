@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"log"
+	"net"
+	"os"
 	"time"
 
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
@@ -11,10 +13,29 @@ import (
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
 	uuid "github.com/satori/go.uuid"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
-func IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
+type server struct {
+	iampb.UnimplementedIamServer
+}
+
+func StartAndListen() {
+	var listenPort = os.Getenv("ListenPort")
+	lis, err := net.Listen("tcp", listenPort)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	iampb.RegisterIamServer(s, &server{})
+	log.Println("API Server is listening on port 30001")
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+func (s *server) IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
 	log.Println("login request", in.RequestId, in.UserName)
 	var user = &model.User{}
 	err := database.GetDB().Model(&user).Where("username = ? and password = ?", in.UserName, in.Password).Find(&user).Error
@@ -36,7 +57,7 @@ func IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginRe
 	return reply, nil
 }
 
-func IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
+func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
 	log.Println("regist request", in.RequestId, in.UserName)
 	var counter int64 = 1
 	var user = &model.User{
@@ -70,7 +91,7 @@ func IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.Creat
 	return reply, nil
 }
 
-func IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStatusRequest) (*iampb.IamCheckStatusReply, error) {
+func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStatusRequest) (*iampb.IamCheckStatusReply, error) {
 	data, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("cannot get metadata")

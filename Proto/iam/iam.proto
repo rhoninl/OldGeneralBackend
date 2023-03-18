@@ -5,11 +5,9 @@ package iam;
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/iam";
 
 service iam {
-    rpc CreateUser(CreateUserRequest) returns (CreateUserReply);
-    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserReply);
-    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserReply);
     rpc IAMLogin(IamLoginRequest) returns (IamLoginReply);
-    rpc IAMLogout(IamLogoutRequest) returns (IamLogoutReply);
+    rpc IAMRegister(CreateUserRequest) returns (CreateUserReply);
+    rpc IAMCheckLoginStatus(IamCheckStatusRequest) returns (IamCheckStatusReply);
 }
 
 message CreateUserRequest {
