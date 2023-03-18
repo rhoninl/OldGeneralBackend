@@ -104,7 +104,7 @@ func (s *server) InitUserInfo(ctx context.Context, in *userpb.InitUserInfoReques
 		ID:        in.UserId,
 		Name:      "将军",
 		Gender:    "男",
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UnixMicro(),
 		Avatar:    defaultAvatar,
 		Signature: "",
 	}

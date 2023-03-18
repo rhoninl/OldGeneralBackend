@@ -4,20 +4,16 @@
 
 package model
 
-import (
-	"time"
-)
-
 const TableNameUserInfo = "user_info"
 
 // UserInfo mapped from table <user_info>
 type UserInfo struct {
-	ID        string    `gorm:"column:id;primaryKey" json:"id"`
-	Name      string    `gorm:"column:name;not null" json:"name"`
-	Signature string    `gorm:"column:signature;not null" json:"signature"`
-	Gender    string    `gorm:"column:gender;not null" json:"gender"`
-	Avatar    string    `gorm:"column:avatar;not null" json:"avatar"`
-	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
+	ID        string `gorm:"column:id;primaryKey" json:"id"`
+	Name      string `gorm:"column:name;not null" json:"name"`
+	Signature string `gorm:"column:signature;not null" json:"signature"`
+	Gender    string `gorm:"column:gender;not null" json:"gender"`
+	Avatar    string `gorm:"column:avatar;not null" json:"avatar"`
+	CreatedAt int64  `gorm:"column:created_at" json:"created_at"`
 }
 
 // TableName UserInfo's table name
