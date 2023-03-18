@@ -108,7 +108,7 @@ func (s *server) InitUserInfo(ctx context.Context, in *userpb.InitUserInfoReques
 		Avatar:    defaultAvatar,
 		Signature: "",
 	}
-	err := database.GetDB().Model(&model.UserInfo{}).Save(&userInfo).Error
+	err := database.GetDB().Model(&model.UserInfo{}).Create(&userInfo).Error
 	if err != nil {
 		log.Printf("cannot init userBasic Info by user id: %s, error: %s", in.UserId, err)
 		return nil, errors.New("Cannot init user")
