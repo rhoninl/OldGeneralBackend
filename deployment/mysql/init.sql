@@ -15,6 +15,6 @@ Create Table
         `signature` varchar(255) NOT NULL,
         `gender` varchar(10) NOT NULL,
         `avatar` text NOT NULL,
-        `created_at` TIMESTAMP,
+        `created_at` BIGINT,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
