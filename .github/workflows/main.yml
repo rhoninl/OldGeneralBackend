@@ -41,13 +41,19 @@ jobs:
       - name: Build and push Docker image
         run: |
           make build-protos-go
-          make build-image-api
+          make build-image
           docker tag serviceapi:nightly ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
+          docker tag serviceiam:nightly ${{ env.DOCKER_REGISTRY }}/serviciam:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
+
       - name: Patch ServiceAPI Image tag
-        # You may pin to the exact commit or the version.
-        # uses: steebchen/kubectl@7c4c70d551952e40881998b840e16d4d9824a54f
         uses: steebchen/kubectl@v2.1.1
         with:
           config: ${{ secrets.KUBECONFIG }}
           command: set image deployment -n oldgeneral serviceapi serviceapi=swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceapi:${{ github.run_id }}
+      - name: Patch ServiceIAM Image tag
+        uses: steebchen/kubectl@v2.1.1
+        with:
+          config: ${{ secrets.KUBECONFIG }}
+          command: set image deployment -n oldgeneral serviceiam serviceapi=swr.cn-north-4.myhuaweicloud.com/oldgeneral/serviceiam:${{ github.run_id }}

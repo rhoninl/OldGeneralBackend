@@ -3,7 +3,6 @@ FROM --platform=$BUILDPLATFORM golang:1.20.2 as builder
 WORKDIR /oldgeneral
 
 COPY . .
-
 ENV http_proxy=http://192.168.0.5:7890
 ENV https_proxy=http://192.168.0.5:7890
 ENV all_proxy=socks5://192.168.0.5:7890
@@ -13,12 +12,12 @@ RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o /output/api cmd/api/api.go
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o /output/iam cmd/iam/iam.go
 
 FROM gcr.io/distroless/static-debian11
 WORKDIR /
-COPY --from=builder /output/api api
+COPY --from=builder /output/iam iam
 
 # Command to run the executable
 USER 65532:65532
-ENTRYPOINT ["/api"]
+ENTRYPOINT ["/iam"]

@@ -2,7 +2,7 @@
 Create secret to store redis password
 ```bash
 kubectl create secret generic -n database redis-secret \
---from-literal=redis-password=${REDIS_PASSWORD}
+--from-literal=redis-password=huangliandedianwei
 ```
 
 
