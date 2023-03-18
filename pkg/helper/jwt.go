@@ -1,11 +1,18 @@
 package helper
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"google.golang.org/grpc/metadata"
+)
+
+const (
+	CONTEXT_USER_TOKEN_AUTHORIZATION_STR = "Authorization"
 )
 
 var jwtSecret = os.Getenv("JWT_SECRET")
@@ -40,4 +47,24 @@ func ValidateToken(token string) (string, bool) {
 	}
 
 	return "", false
+}
+
+func GetUserIdFromContext(ctx context.Context) (string, error) {
+	md, exists := metadata.FromIncomingContext(ctx)
+	if !exists {
+		return "", errors.New("cannot get incomming context")
+	}
+
+	tokens := md.Get(CONTEXT_USER_TOKEN_AUTHORIZATION_STR)
+	if len(tokens) < 1 {
+		return "", errors.New("cannot get authorization")
+	}
+
+	token := tokens[0]
+	userId, legal := ValidateToken(token)
+	if !legal {
+		return "", errors.New("token is not valid")
+	}
+
+	return userId, nil
 }

@@ -1,6 +1,6 @@
 PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-build-image: build-image-api build-image-iam
+build-image: build-image-api build-image-iam build-image-user
 
 build-image-api:
 	docker buildx build --platform=linux/amd64 \
@@ -11,6 +11,11 @@ build-image-iam:
 	docker buildx build --platform=linux/amd64 \
 	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.iam . \
 	-t serviceiam:nightly --load
+
+build-image-user:
+	docker buildx build --platform=linux/amd64 \
+	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.user . \
+	-t serviceuser:nightly --load
 
 test: fmt
 	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)

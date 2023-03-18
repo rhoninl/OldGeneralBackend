@@ -5,41 +5,24 @@ import (
 	"log"
 
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/leepala/OldGeneralBackend/pkg/iam"
 )
 
-var (
-	grpcIAMAddress = "serviceiam.oldgeneral.svc.cluster.local:30001"
-	grpcIamClient  *iampb.IamClient
+const (
+	CONTEXT_USER_TOKEN_AUTHORIZATION_STR = "Authorization"
 )
-
-func getIamClient() iampb.IamClient {
-	if grpcIamClient != nil {
-		return *grpcIamClient
-	}
-	conn, err := grpc.Dial(grpcIAMAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("Failed to connect to dataApi server: %v with error: %v ", grpcIAMAddress, err)
-		return nil
-	}
-
-	client := iampb.NewIamClient(conn)
-	grpcIamClient = &client
-	return *grpcIamClient
-}
 
 func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
 	log.Println("received login request", in.RequestId, in.UserName)
-	return getIamClient().IAMLogin(ctx, in)
+	return iam.GetClient().IAMLogin(ctx, in)
 }
 
 func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
 	log.Println("received register request", in.RequestId, in.UserName)
-	return getIamClient().IAMRegister(ctx, in)
+	return iam.GetClient().IAMRegister(ctx, in)
 }
 
 func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStatusRequest) (*iampb.IamCheckStatusReply, error) {
 	log.Println("received check login status request", in.RequestId)
-	return getIamClient().IAMCheckLoginStatus(ctx, in)
+	return iam.GetClient().IAMCheckLoginStatus(ctx, in)
 }

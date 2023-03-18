@@ -5,16 +5,20 @@ import (
 	"errors"
 	"log"
 	"net"
-	"os"
 	"time"
 
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
+	userpb "github.com/leepala/OldGeneralBackend/Proto/user"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	"github.com/leepala/OldGeneralBackend/pkg/user"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
+)
+
+const (
+	listenPort = ":50001"
 )
 
 type server struct {
@@ -22,7 +26,6 @@ type server struct {
 }
 
 func StartAndListen() {
-	var listenPort = os.Getenv("ListenPort")
 	lis, err := net.Listen("tcp", listenPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -35,7 +38,7 @@ func StartAndListen() {
 	}
 }
 
-func (s *server) IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
+func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
 	log.Println("login request", in.RequestId, in.UserName)
 	var user = &model.User{}
 	err := database.GetDB().Model(&user).Where("username = ? and password = ?", in.UserName, in.Password).Find(&user).Error
@@ -60,7 +63,7 @@ func (s *server) IamLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iamp
 func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
 	log.Println("regist request", in.RequestId, in.UserName)
 	var counter int64 = 1
-	var user = &model.User{
+	var userInfo = &model.User{
 		ID:       uuid.NewV4().String(),
 		Username: in.UserName,
 		Password: in.Password,
@@ -71,8 +74,9 @@ func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (
 		IsSuccess: false,
 	}
 
-	err := database.GetDB().Model(&user).Where("username = ?", in.UserName).Count(&counter).Error
+	err := database.GetDB().Model(&userInfo).Where("username = ?", in.UserName).Count(&counter).Error
 	if err != nil {
+		log.Println("Error to get user from db", err)
 		return nil, err
 	}
 
@@ -82,8 +86,19 @@ func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (
 		return reply, nil
 	}
 
-	err = database.GetDB().Model(&user).Save(&user).Error
+	err = database.GetDB().Model(&userInfo).Save(&userInfo).Error
 	if err != nil {
+		log.Println("Error to save user to db", err)
+		return nil, err
+	}
+
+	initRequest := &userpb.InitUserInfoRequest{
+		UserId: userInfo.ID,
+	}
+
+	_, err = user.GetClient().InitUserInfo(ctx, initRequest)
+	if err != nil {
+		log.Println("Error to init user info", err)
 		return nil, err
 	}
 
@@ -92,32 +107,24 @@ func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (
 }
 
 func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStatusRequest) (*iampb.IamCheckStatusReply, error) {
-	data, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, errors.New("cannot get metadata")
-	}
+	log.Println("check login status request", in.RequestId)
 
-	authorization := data.Get("authorization")
-	if len(authorization) == 0 {
-		return nil, errors.New("cannot get authorization")
-	}
-
-	token := data.Get("authorization")[0]
-	log.Println("check status request", in.RequestId, token)
-
-	userId, legal := helper.ValidateToken(token)
-	if !legal {
-		return nil, errors.New("token is not valid")
-	}
-
-	var user = &model.User{}
-	err := database.GetDB().Model(user).Where("id = ?", userId).Find(&user).Error
+	userId, err := helper.GetUserIdFromContext(ctx)
 	if err != nil {
+		log.Println("Error to get user id from context", err)
 		return nil, err
 	}
 
-	token, err = helper.GenerateToken(user.ID)
+	var user = &model.User{}
+	err = database.GetDB().Model(user).Where("id = ?", userId).Find(&user).Error
 	if err != nil {
+		log.Println("Error to get user from db", err)
+		return nil, err
+	}
+
+	token, err := helper.GenerateToken(user.ID)
+	if err != nil {
+		log.Println("Error to generate token", err)
 		return nil, err
 	}
 

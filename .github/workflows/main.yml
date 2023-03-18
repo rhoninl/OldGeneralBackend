@@ -43,8 +43,10 @@ jobs:
           make build-protos-go
           make build-image
           docker tag serviceapi:nightly ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
-          docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker tag serviceiam:nightly ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
+          docker tag serviceuser:nightly ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
 
       - name: Patch ServiceAPI Image tag
@@ -52,8 +54,15 @@ jobs:
         with:
           config: ${{ secrets.KUBECONFIG }}
           command: set image deployment -n oldgeneral serviceapi serviceapi=${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
+
       - name: Patch ServiceIAM Image tag
         uses: steebchen/kubectl@v2.1.1
         with:
           config: ${{ secrets.KUBECONFIG }}
           command: set image deployment -n oldgeneral serviceiam serviceiam=${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
+
+      - name: Patch ServiceUser Image tag
+        uses: steebchen/kubectl@v2.1.1
+        with:
+          config: ${{ secrets.KUBECONFIG }}
+          command: set image deployment -n oldgeneral serviceuser serviceuser=${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}

@@ -1,9 +1,16 @@
 syntax = "proto3";
 
-package userinfo;
+package user;
 import "Proto/cdr/cdr.proto";
+import "google/protobuf/empty.proto";
 
-option go_package = "github.com/leepala/OldGeneralBackend/Proto/userinfo";
+option go_package = "github.com/leepala/OldGeneralBackend/Proto/user";
+
+service User {
+    rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoReply) {}
+    rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoReply) {}
+    rpc InitUserInfo(InitUserInfoRequest) returns (google.protobuf.Empty){}
+}
 
 message GetUserInfoRequest {
     string RequestId = 1;
@@ -14,7 +21,7 @@ message GetUserInfoRequest {
 message GetUserInfoReply {
     string RequestId = 1;
     int64 ReplyTime = 2;
-    optional cdr.UserBasicInfo UserInfo = 3;
+    cdr.UserBasicInfo UserInfo = 3;
 }
 
 message UpdateUserInfoRequest {
@@ -29,4 +36,8 @@ message UpdateUserInfoRequest {
 message UpdateUserInfoReply {
     string RequestId = 1;
     int64 ReplyTime = 2;
+}
+
+message InitUserInfoRequest {
+    string UserId = 1;
 }
