@@ -10,17 +10,17 @@ import (
 )
 
 var (
-	grpcDataAPIAddress = "servicedataapi.oldgeneral.svc.cluster.local:50051"
-	grpcIamClient      iampb.IamClient
+	grpcIAMAddress = "serviceiam.oldgeneral.svc.cluster.local:50051"
+	grpcIamClient  iampb.IamClient
 )
 
 func getIamClient() iampb.IamClient {
 	if grpcIamClient != nil {
 		return grpcIamClient
 	}
-	conn, err := grpc.Dial(grpcDataAPIAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	conn, err := grpc.Dial(grpcIAMAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("Failed to connect to dataApi server: %v with error: %v ", grpcDataAPIAddress, err)
+		log.Fatalf("Failed to connect to dataApi server: %v with error: %v ", grpcIAMAddress, err)
 		return nil
 	}
 
