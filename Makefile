@@ -1,16 +1,14 @@
 PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-build-image: build-image-api build-image-iam
+build-image:
+	docker buildx build --platform=linux/$(shell go env GOARCH) -f ${PROJECT_ROOT}/dockerfiles/dockerfile \
+	--build-arg PROJECT_ROOT="${PROJECT_ROOT}" ${PROJECT_ROOT} \
+	-t imagenage:version --load
 
 build-image-api:
 	docker buildx build --platform=linux/amd64 \
 	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.api . \
 	-t serviceapi:nightly --load
-
-build-image-iam:
-	docker buildx build --platform=linux/amd64 \
-	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.iam . \
-	-t serviceiam:nightly --load
 
 test: fmt
 	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)

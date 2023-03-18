@@ -1,14 +1,10 @@
-FROM --platform=$BUILDPLATFORM golang:1.20.2 as builder
+FROM --platform=$BUILDPLATFORM golang:1.19.2 as builder
 
 WORKDIR /oldgeneral
 
 COPY . .
 
-ENV http_proxy=http://192.168.0.5:7890
-ENV https_proxy=http://192.168.0.5:7890
-ENV all_proxy=socks5://192.168.0.5:7890
-
-RUN go mod download -x
+RUN go mod download
 
 ARG TARGETOS
 ARG TARGETARCH

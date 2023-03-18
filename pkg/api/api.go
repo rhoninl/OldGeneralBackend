@@ -5,14 +5,15 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	"os"
 	"strconv"
 	"time"
 
 	apipb "github.com/leepala/OldGeneralBackend/Proto/api"
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	"github.com/leepala/OldGeneralBackend/Proto/flags"
+	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
 	"github.com/leepala/OldGeneralBackend/Proto/userinfo"
+	"github.com/leepala/OldGeneralBackend/pkg/iam"
 	uuid "github.com/satori/go.uuid"
 
 	"google.golang.org/grpc"
@@ -23,8 +24,7 @@ type server struct {
 }
 
 func StartAndListen() {
-	var listenPort = os.Getenv("ListenPort")
-	lis, err := net.Listen("tcp", listenPort)
+	lis, err := net.Listen("tcp", ":30001")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -34,6 +34,18 @@ func StartAndListen() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
+	return iam.IamLogin(ctx, in)
+}
+
+func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
+	return iam.IAMRegister(ctx, in)
+}
+
+func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStatusRequest) (*iampb.IamCheckStatusReply, error) {
+	return iam.IAMCheckLoginStatus(ctx, in)
 }
 
 func (s *server) GetUserInfo(ctx context.Context, in *userinfo.GetUserInfoRequest) (*userinfo.GetUserInfoReply, error) {
