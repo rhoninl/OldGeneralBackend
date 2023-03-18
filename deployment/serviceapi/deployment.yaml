@@ -19,8 +19,6 @@ spec:
           ports:
             - containerPort: 30001
           env:
-            - name: ListenPort
-              value: ":30001"
             - name: DB_USER
               value: caocao
             - name: DB_ADDRESS
