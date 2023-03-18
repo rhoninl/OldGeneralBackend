@@ -12,14 +12,28 @@ import (
 	apipb "github.com/leepala/OldGeneralBackend/Proto/api"
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	"github.com/leepala/OldGeneralBackend/Proto/flags"
-	"github.com/leepala/OldGeneralBackend/Proto/userinfo"
 	uuid "github.com/satori/go.uuid"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type server struct {
 	apipb.UnimplementedApiServer
+}
+
+func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	md, exists := metadata.FromIncomingContext(ctx)
+	if exists {
+		token := md.Get(CONTEXT_USER_TOKEN_AUTHORIZATION_STR)
+		if len(token) > 0 {
+			ctx = metadata.AppendToOutgoingContext(ctx, CONTEXT_USER_TOKEN_AUTHORIZATION_STR, token[0])
+			log.Println("api without any token")
+		}
+	} else {
+		log.Println("cannot get authorization")
+	}
+	return handler(ctx, req)
 }
 
 func StartAndListen() {
@@ -28,29 +42,13 @@ func StartAndListen() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+	interceptor := grpc.UnaryInterceptor(unaryInterceptor)
+	s := grpc.NewServer(interceptor)
 	apipb.RegisterApiServer(s, &server{})
 	log.Println("API Server is listening on port 30001")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-}
-
-func (s *server) GetUserInfo(ctx context.Context, in *userinfo.GetUserInfoRequest) (*userinfo.GetUserInfoReply, error) {
-	log.Println("get user info request", in.RequestId, in.UserId)
-	reply := &userinfo.GetUserInfoReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-		UserInfo: &cdr.UserBasicInfo{
-			UserId:        in.UserId,
-			UserName:      "MrLeea",
-			UserSignature: "不要迷恋哥，哥只是个传说",
-			UserAvatar:    "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/avatars/turtlerock.jpg",
-			UserGender:    "男",
-			UserBirthday:  time.Now().UnixMicro(),
-		},
-	}
-	return reply, nil
 }
 
 func (s *server) SearchMyFlag(ctx context.Context, in *flags.SearchMyFlagRequest) (*flags.SearchMyFlagReply, error) {

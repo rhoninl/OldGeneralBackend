@@ -11,12 +11,12 @@ message User {
 }
 
 message UserBasicInfo {
-    string user_id = 1;
-    string user_name = 2;
-    string user_avatar = 3;
-    string user_signature = 4;
-    string user_gender = 5;
-    int64 user_birthday = 6;
+    string id = 1;
+    string name = 2;
+    string avatar = 3;
+    string signature = 4;
+    string gender = 5;
+    int64 birthday = 6;
 }
 
 message FlagBasicInfo {

@@ -3,7 +3,7 @@ package api;
 
 import "Proto/iam/iam.proto";
 import "Proto/flags/flags.proto";
-import "Proto/userinfo/userinfo.proto";
+import "Proto/user/user.proto";
 import "Proto/wallet/wallet.proto";
 import "Proto/vip/vip.proto";
 import "Proto/message/message.proto";
@@ -25,8 +25,8 @@ service api {
     rpc GetVipStatus(vip.GetVipStatusRequest) returns (vip.GetVipStatusReply);
 
     // userInfo
-    rpc GetUserInfo(userinfo.GetUserInfoRequest) returns (userinfo.GetUserInfoReply);
-    rpc UpdateUserInfo(userinfo.UpdateUserInfoRequest) returns (userinfo.UpdateUserInfoReply);
+    rpc GetUserInfo(user.GetUserInfoRequest) returns (user.GetUserInfoReply);
+    rpc UpdateUserInfo(user.UpdateUserInfoRequest) returns (user.UpdateUserInfoReply);
 
     // message
     rpc FetchMessage(message.FetchMessageRequest) returns (message.FetchMessageReply);
