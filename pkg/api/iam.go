@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	grpcIAMAddress = "serviceiam.oldgeneral.svc.cluster.local:50051"
+	grpcIAMAddress = "serviceiam.oldgeneral.svc.cluster.local:30001"
 	grpcIamClient  iampb.IamClient
 )
 
