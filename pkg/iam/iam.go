@@ -29,7 +29,7 @@ func StartAndListen() {
 	}
 	s := grpc.NewServer()
 	iampb.RegisterIamServer(s, &server{})
-	log.Println("API Server is listening on port 30001")
+	log.Println("API Server is listening on port", listenPort)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

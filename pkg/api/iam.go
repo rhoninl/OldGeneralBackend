@@ -11,10 +11,10 @@ import (
 
 var (
 	grpcIAMAddress = "serviceiam.oldgeneral.svc.cluster.local:30001"
-	grpcIamClient  iampb.IamClient
+	grpcIamClient  *iampb.IamClient
 )
 
-func getIamClient() iampb.IamClient {
+func getIamClient() *iampb.IamClient {
 	if grpcIamClient != nil {
 		return grpcIamClient
 	}
@@ -24,7 +24,8 @@ func getIamClient() iampb.IamClient {
 		return nil
 	}
 
-	grpcIamClient = iampb.NewIamClient(conn)
+	client := iampb.NewIamClient(conn)
+	grpcIamClient = &client
 	return grpcIamClient
 }
 
