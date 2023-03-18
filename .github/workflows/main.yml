@@ -51,9 +51,9 @@ jobs:
         uses: steebchen/kubectl@v2.1.1
         with:
           config: ${{ secrets.KUBECONFIG }}
-          command: set image deployment -n oldgeneral serviceapi ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
+          command: set image deployment -n oldgeneral serviceapi serviceapi=${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
       - name: Patch ServiceIAM Image tag
         uses: steebchen/kubectl@v2.1.1
         with:
           config: ${{ secrets.KUBECONFIG }}
-          command: set image deployment -n oldgeneral serviceiam ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
+          command: set image deployment -n oldgeneral serviceiam serviceiam=${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
