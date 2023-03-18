@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	listenPort = ":50001"
+	listenPort = ":30001"
 )
 
 type server struct {

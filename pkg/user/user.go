@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	listenPort    = ":50001"
+	listenPort    = ":30001"
 	defaultAvatar = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com/avatars/turtlerock.jpg"
 )
 
