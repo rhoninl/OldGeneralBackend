@@ -17,6 +17,11 @@ build-image-user:
 	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.user . \
 	-t serviceuser:nightly --load
 
+build-image-flags:
+	docker buildx build --platform=linux/amd64 \
+	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.flags . \
+	-t serviceflags:nightly --load
+
 test: fmt
 	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)
 

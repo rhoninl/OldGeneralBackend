@@ -20,27 +20,27 @@ message UserBasicInfo {
 }
 
 message FlagBasicInfo {
-    string flag_id = 1;
+    string id = 1;
     string user_id = 2;
-    string flag_name = 3;
-    string flag_status = 4;
+    string name = 3;
+    string status = 4;
     int64 total_time = 5;
     int64 current_time = 6;
     int64 start_time = 7;
-    int64 pay_money = 8;
+    int64 challenge_num = 8;
 }
 
 message FlagDetailInfo {
-    string flag_id = 1;
+    string id = 1;
     string user_id = 2;
     string user_name = 3;
     string user_avatar = 4;
-    string flag_name = 5;
-    string flag_status = 6;
+    string name = 5;
+    string status = 6;
     int64 total_time = 7;
     int64 current_time = 8;
     int64 start_time = 9;
-    int64 create_time = 10;
+    int64 created_at = 10;
     int64 challenge_num = 11;
     int64 siege_num = 12;
     int64 star_num = 13;
