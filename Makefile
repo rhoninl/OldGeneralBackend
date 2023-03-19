@@ -1,6 +1,6 @@
 PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-build-image: build-image-api build-image-iam build-image-user
+build-image: build-image-api build-image-iam build-image-user build-image-flags
 
 build-image-api:
 	docker buildx build --platform=linux/amd64 \
