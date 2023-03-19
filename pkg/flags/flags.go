@@ -10,6 +10,7 @@ import (
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 )
 
@@ -41,6 +42,8 @@ func (s *server) CreateFlag(ctx context.Context, in *flagspb.CreateFlagRequest) 
 		log.Println("error converting flag", err)
 		return nil, err
 	}
+	flag.ID = uuid.NewV4().String()
+	flag.Status = "running"
 	err = database.GetDB().Model(&flag).Create(&flag).Error
 	if err != nil {
 		return nil, err
