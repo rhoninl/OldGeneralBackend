@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	grpcFlagsAddress = "serviceiam.oldgeneral.svc.cluster.local" + listenPort
+	grpcFlagsAddress = "serviceflags.oldgeneral.svc.cluster.local" + listenPort
 	grpcFlagsClient  *flagspb.FlagsClient
 )
 
