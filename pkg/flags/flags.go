@@ -6,10 +6,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	flagspb "github.com/leepala/OldGeneralBackend/Proto/flags"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
+	"github.com/leepala/OldGeneralBackend/pkg/model"
 	"google.golang.org/grpc"
 )
 
@@ -36,7 +36,7 @@ func StartAndListen() {
 
 func (s *server) CreateFlag(ctx context.Context, in *flagspb.CreateFlagRequest) (*flagspb.CreateFlagReply, error) {
 	log.Println("create flag request", in.RequestId, in.Info.Id)
-	flag, err := helper.TypeConverter[cdr.FlagBasicInfo](in.Info)
+	flag, err := helper.TypeConverter[model.FlagInfo](in.Info)
 	if err != nil {
 		log.Println("error converting flag", err)
 		return nil, err
