@@ -58,44 +58,34 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flags.SearchMyFlagRequest
 		ReplyTime: time.Now().UnixMicro(),
 		Flags: []*cdr.FlagBasicInfo{
 			{
-				FlagId:      uuid.NewV4().String(),
+				Id:          uuid.NewV4().String(),
 				UserId:      in.UserId,
-				FlagName:    "flag1",
-				FlagStatus:  "running",
+				Name:        "flag1",
+				Status:      "running",
 				TotalTime:   100,
 				CurrentTime: 50,
 				StartTime:   time.Now().UnixMicro(),
 			},
 			{
-				FlagId:      uuid.NewV4().String(),
+				Id:          uuid.NewV4().String(),
 				UserId:      in.UserId,
-				FlagName:    "flag2",
-				FlagStatus:  "banned",
+				Name:        "flag2",
+				Status:      "banned",
 				TotalTime:   100,
 				CurrentTime: 50,
 				StartTime:   time.Now().UnixMicro(),
 			},
 			{
-				FlagId:      uuid.NewV4().String(),
+				Id:          uuid.NewV4().String(),
 				UserId:      in.UserId,
-				FlagName:    "flag3",
-				FlagStatus:  "finished",
+				Name:        "flag3",
+				Status:      "finished",
 				TotalTime:   100,
 				CurrentTime: 50,
 				StartTime:   time.Now().UnixMicro(),
 			},
 		},
 	}
-	return reply, nil
-}
-
-func (s *server) CreateFlag(ctx context.Context, in *flags.CreateFlagRequest) (*flags.CreateFlagReply, error) {
-	log.Println("create flag request", in)
-	reply := &flags.CreateFlagReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-	}
-
 	return reply, nil
 }
 
@@ -128,11 +118,11 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flags.GetFlagDetailReque
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),
 		Info: &cdr.FlagDetailInfo{
-			FlagId: in.FlagId,
+			Id:     in.FlagId,
 			UserId: "testUserId",
 
-			FlagName:     "testFlag",
-			FlagStatus:   "running",
+			Name:         "testFlag",
+			Status:       "running",
 			TotalTime:    100,
 			CurrentTime:  0,
 			StartTime:    time.Now().UnixMicro(),

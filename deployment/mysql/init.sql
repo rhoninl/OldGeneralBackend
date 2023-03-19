@@ -18,3 +18,16 @@ Create Table
         `created_at` BIGINT,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `flag_info` (
+        `id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `name` varchar(255) NOT NULL,
+        `status` varchar(10) NOT NULL,
+        `created_at` BIGINT,
+        `total_time` INT NOT NULL,
+        `start_time` BIGINT,
+        `challenge_num` INT NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;

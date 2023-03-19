@@ -45,9 +45,11 @@ jobs:
           docker tag serviceapi:nightly ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker tag serviceiam:nightly ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
           docker tag serviceuser:nightly ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
+          docker tag serviceflags:nightly ${{ env.DOCKER_REGISTRY }}/serviceflags:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/serviceflags:${{ github.run_id }}
 
       - name: Patch ServiceAPI Image tag
         uses: steebchen/kubectl@v2.1.1
@@ -66,3 +68,9 @@ jobs:
         with:
           config: ${{ secrets.KUBECONFIG }}
           command: set image deployment -n oldgeneral serviceuser serviceuser=${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
+
+      - name: Patch ServiceFlags Image tag
+        uses: steebchen/kubectl@v2.1.1
+        with:
+          config: ${{ secrets.KUBECONFIG }}
+          command: set image deployment -n oldgeneral serviceflags serviceflags=${{ env.DOCKER_REGISTRY }}/serviceflags:${{ github.run_id }}
