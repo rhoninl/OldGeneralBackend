@@ -12,3 +12,8 @@ func (s *server) CreateFlag(ctx context.Context, in *flagspb.CreateFlagRequest) 
 	log.Println("create flag request", in.RequestId, in.Info.Id)
 	return flags.GetClient().CreateFlag(ctx, in)
 }
+
+func (s *server) SearchMyFlag(ctx context.Context, in *flagspb.SearchMyFlagRequest) (*flagspb.SearchMyFlagReply, error) {
+	log.Println("get my flag request", in.RequestId, in.UserId)
+	return flags.GetClient().SearchMyFlag(ctx, in)
+}
