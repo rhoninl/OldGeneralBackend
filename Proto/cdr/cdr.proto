@@ -71,4 +71,5 @@ message SignInInfo {
     string picture_url = 3;
     string content = 4;
     int64 current_time = 5;
+    int64 created_at = 6;
 }

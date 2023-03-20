@@ -161,19 +161,12 @@ func (s *server) SignInFlag(ctx context.Context, in *flagspb.SignInFlagRequest) 
 		flag.Status = "finished"
 	}
 
-	signInInfo := &model.SignIn{
-		ID:        uuid.NewV4().String(),
-		FlagID:    flag.ID,
-		UserID:    flag.UserID,
-		CreatedAt: time.Now().UnixMicro(),
-		TotalTime: flag.TotalTime,
-	}
 	signinInfo.ID = uuid.NewV4().String()
 	signinInfo.CreatedAt = time.Now().UnixMicro()
 	signinInfo.UserID = flag.UserID
 	signinInfo.TotalTime = flag.TotalTime
 
-	err = database.GetDB().Model(&signInInfo).Save(&signInInfo).Error
+	err = database.GetDB().Model(&signinInfo).Save(&signinInfo).Error
 	if err != nil {
 		log.Println("error saving sign in info", err)
 		return nil, err
