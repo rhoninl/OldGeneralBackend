@@ -51,44 +51,6 @@ func StartAndListen() {
 	}
 }
 
-func (s *server) SearchMyFlag(ctx context.Context, in *flags.SearchMyFlagRequest) (*flags.SearchMyFlagReply, error) {
-	log.Println("get my flag request", in.RequestId, in.UserId)
-	reply := &flags.SearchMyFlagReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-		Flags: []*cdr.FlagBasicInfo{
-			{
-				Id:          uuid.NewV4().String(),
-				UserId:      in.UserId,
-				Name:        "flag1",
-				Status:      "running",
-				TotalTime:   100,
-				CurrentTime: 50,
-				StartTime:   time.Now().UnixMicro(),
-			},
-			{
-				Id:          uuid.NewV4().String(),
-				UserId:      in.UserId,
-				Name:        "flag2",
-				Status:      "banned",
-				TotalTime:   100,
-				CurrentTime: 50,
-				StartTime:   time.Now().UnixMicro(),
-			},
-			{
-				Id:          uuid.NewV4().String(),
-				UserId:      in.UserId,
-				Name:        "flag3",
-				Status:      "finished",
-				TotalTime:   100,
-				CurrentTime: 50,
-				StartTime:   time.Now().UnixMicro(),
-			},
-		},
-	}
-	return reply, nil
-}
-
 func (s *server) FetchFlagSquare(ctx context.Context, in *flags.FetchFlagSquareRequest) (*flags.FetchFlagSquareReply, error) {
 	log.Println("fetch flag square request", in)
 	reply := &flags.FetchFlagSquareReply{
