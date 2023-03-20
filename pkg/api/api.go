@@ -73,26 +73,3 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flags.FetchFlagSquareR
 	}
 	return reply, nil
 }
-
-func (s *server) GetFlagDetail(ctx context.Context, in *flags.GetFlagDetailRequest) (*flags.GetFlagDetailReply, error) {
-	log.Println("get flag info request", in)
-	reply := &flags.GetFlagDetailReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-		Info: &cdr.FlagDetailInfo{
-			Id:     in.FlagId,
-			UserId: "testUserId",
-
-			Name:         "testFlag",
-			Status:       "running",
-			TotalTime:    100,
-			CurrentTime:  0,
-			StartTime:    time.Now().UnixMicro(),
-			ChallengeNum: 100,
-			SiegeNum:     399,
-			StarNum:      100,
-			SignUpId:     []string{"123", "456", "789"},
-		},
-	}
-	return reply, nil
-}
