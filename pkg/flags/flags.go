@@ -83,11 +83,12 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flagspb.SearchMyFlagReque
 	return reply, nil
 }
 
-func (s *server) GetFlagDEtail(ctx context.Context, in *flagspb.GetFlagDetailRequest) (*flagspb.GetFlagDetailReply, error) {
+func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailRequest) (*flagspb.GetFlagDetailReply, error) {
 	log.Println("get flag detail request", in.RequestId, in.FlagId)
 	var flag model.FlagInfo
 	err := database.GetDB().Model(&flag).Where("id = ?", in.FlagId).Find(&flag).Error
 	if err != nil {
+		log.Println("error getting flag info", err)
 		return nil, err
 	}
 	f, err := helper.TypeConverter[cdr.FlagDetailInfo](flag)
