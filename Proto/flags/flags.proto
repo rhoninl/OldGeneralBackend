@@ -78,9 +78,7 @@ message GetSignInInfoReply {
 message SignInFlagRequest {
     string request_id = 1;
     int64 request_time = 2;
-    string flag_id = 3;
-    string sign_in_message = 4;
-    string sign_in_picture_url = 5;
+    cdr.SignInInfo info = 3;
 }
 
 message SignInFlagReply {

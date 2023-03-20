@@ -22,3 +22,8 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 	log.Println("get flag info request", in)
 	return flags.GetClient().GetFlagDetail(ctx, in)
 }
+
+func (s *server) SignInFlag(ctx context.Context, in *flagspb.SignInFlagRequest) (*flagspb.SignInFlagReply, error) {
+	log.Println("sign in flag request", in)
+	return flags.GetClient().SignInFlag(ctx, in)
+}

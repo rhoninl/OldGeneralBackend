@@ -31,3 +31,16 @@ Create Table
         `challenge_num` INT NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `sign_in` (
+        `id` varchar(40) NOT NULL,
+        `flag_id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `created_at` BIGINT,
+        `current_time` INT NOT NULL,
+        `total_time` INT NOT NULL,
+        `content` varchar(255) NOT NULL,
+        `picture_url` text NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;

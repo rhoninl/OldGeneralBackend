@@ -66,10 +66,9 @@ message WaterFlow {
 }
 
 message SignInInfo {
-    string signin_id = 1;
+    string id = 1;
     string flag_id = 2;
-    string signin_picture = 3;
-    int64 timestamp = 4;
-    string signin_content = 5;
-    int64 signin_index = 6;
+    string picture_url = 3;
+    string content = 4;
+    int64 current_time = 5;
 }
