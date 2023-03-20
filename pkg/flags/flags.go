@@ -8,9 +8,11 @@ import (
 
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	flagspb "github.com/leepala/OldGeneralBackend/Proto/flags"
+	userpb "github.com/leepala/OldGeneralBackend/Proto/user"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	"github.com/leepala/OldGeneralBackend/pkg/user"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 )
@@ -77,6 +79,40 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flagspb.SearchMyFlagReque
 			return nil, err
 		}
 		reply.Flags = append(reply.Flags, f)
+	}
+	return reply, nil
+}
+
+func (s *server) GetFlagDEtail(ctx context.Context, in *flagspb.GetFlagDetailRequest) (*flagspb.GetFlagDetailReply, error) {
+	log.Println("get flag detail request", in.RequestId, in.FlagId)
+	var flag model.FlagInfo
+	err := database.GetDB().Model(&flag).Where("id = ?", in.FlagId).Find(&flag).Error
+	if err != nil {
+		return nil, err
+	}
+	f, err := helper.TypeConverter[cdr.FlagDetailInfo](flag)
+	if err != nil {
+		log.Println("error converting flag", err)
+		return nil, err
+	}
+	searchUserReq := &userpb.GetUserInfoRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+		UserId:      flag.UserID,
+	}
+	userInfoReply, err := user.GetClient().GetUserInfo(ctx, searchUserReq)
+	if err != nil {
+		log.Println("error getting user info", err)
+		return nil, err
+	}
+
+	f.UserAvatar = userInfoReply.UserInfo.Avatar
+	f.UserName = userInfoReply.UserInfo.Name
+
+	var reply = &flagspb.GetFlagDetailReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+		Info:      f,
 	}
 	return reply, nil
 }
