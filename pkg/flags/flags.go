@@ -194,8 +194,8 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 		lastSignInTimeStamp = lastSignInId.CreatedAt
 	}
 
-	var flags []model.FlagInfo
-	err := database.GetDB().Model(&model.SignIn{}).Where("created_at < ?", lastSignInTimeStamp).Limit(int(in.PageSize)).Find(&flags).Error
+	var signIns []model.SignIn
+	err := database.GetDB().Model(&model.SignIn{}).Where("created_at < ?", lastSignInTimeStamp).Limit(int(in.PageSize)).Find(&signIns).Error
 	if err != nil {
 		log.Println("error getting flag info", err)
 		return nil, err
@@ -213,7 +213,7 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 		RequestId:   in.RequestId,
 		RequestTime: in.RequestTime,
 	}
-	for _, item := range flags {
+	for _, item := range signIns {
 		flag, err := helper.TypeConverter[cdr.FlagSquareItemInfo](item)
 		if err != nil {
 			log.Println("error converting flag", err)
