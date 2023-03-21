@@ -50,7 +50,7 @@ message FlagDetailInfo {
 message FlagSquareItemInfo {
     string signin_id = 1;
     string user_name = 2;
-    string flag_name = 3;
+    string content = 3;
     int64 total_time = 4;
     int64 current_time = 5;
     int64 challenge_num = 6;

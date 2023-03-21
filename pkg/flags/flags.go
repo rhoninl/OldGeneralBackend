@@ -234,7 +234,7 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 
 		flag.UserName = userInfoReply.UserInfo.Name
 		flag.SigninId = item.ID
-		flag.FlagName = flagDetailReply.Info.Name
+		flag.Content = item.Content
 		flag.ChallengeNum = flagDetailReply.Info.ChallengeNum
 		// TODO: need to get the number of people who have signed in the siege table
 		flag.SiegeNum = 0
