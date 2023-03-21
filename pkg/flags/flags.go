@@ -219,7 +219,7 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 			log.Println("error converting flag", err)
 			return nil, err
 		}
-		searchFlagInfoReq.FlagId = item.ID
+		searchFlagInfoReq.FlagId = item.FlagID
 		flagDetailReply, err := s.GetFlagDetail(ctx, searchFlagInfoReq)
 		if err != nil {
 			log.Println("error getting flag detail", err)
