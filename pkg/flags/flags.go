@@ -161,7 +161,7 @@ func (s *server) SignInFlag(ctx context.Context, in *flagspb.SignInFlagRequest) 
 		flag.Status = "finished"
 	}
 
-	signinInfo.ID = uuid.NewV4().String()
+	signinInfo.ID = in.Info.Id
 	signinInfo.CreatedAt = time.Now().UnixMicro()
 	signinInfo.UserID = flag.UserID
 	signinInfo.TotalTime = flag.TotalTime
