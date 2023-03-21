@@ -32,3 +32,8 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 	log.Println("fetch flag square request", in)
 	return flags.GetClient().FetchFlagSquare(ctx, in)
 }
+
+func (s *server) GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoRequest) (*flagspb.GetSignInInfoReply, error) {
+	log.Println("get sign in info request", in)
+	return flags.GetClient().GetSignInInfo(ctx, in)
+}

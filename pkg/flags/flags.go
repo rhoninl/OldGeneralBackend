@@ -242,3 +242,26 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 	}
 	return reply, nil
 }
+
+func GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoRequest) (*flagspb.GetSignInInfoReply, error) {
+	log.Println("get sign in info request", in)
+
+	var signIns model.SignIn
+	err := database.GetDB().Model(&model.SignIn{}).Where("id = ?", in.SignInId).Find(&signIns).Error
+	if err != nil {
+		log.Println("error getting sign in info", err)
+		return nil, err
+	}
+
+	signIn, err := helper.TypeConverter[cdr.SignInInfo](signIns)
+	if err != nil {
+		log.Println("error converting sign in info", err)
+		return nil, err
+	}
+	reply := &flagspb.GetSignInInfoReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+		Info:      signIn,
+	}
+	return reply, nil
+}
