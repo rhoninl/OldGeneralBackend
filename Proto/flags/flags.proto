@@ -55,6 +55,7 @@ message FetchFlagSquareRequest {
     int64 request_time = 2;
     int64 page = 3;
     int64 page_size = 4;
+    string last_signin_id = 5;
 }
 
 message FetchFlagSquareReply {

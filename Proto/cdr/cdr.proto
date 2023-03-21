@@ -53,9 +53,9 @@ message FlagSquareItemInfo {
     string flag_name = 3;
     int64 total_time = 4;
     int64 current_time = 5;
-    int64 pay_money = 6;
+    int64 challenge_num = 6;
     int64 siege_num = 7;
-    string signin_picture = 8;
+    string picture_url = 8;
 }
 
 message WaterFlow {

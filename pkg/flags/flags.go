@@ -179,3 +179,66 @@ func (s *server) SignInFlag(ctx context.Context, in *flagspb.SignInFlagRequest) 
 
 	return reply, nil
 }
+
+func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquareRequest) (*flagspb.FetchFlagSquareReply, error) {
+	log.Println("fetch flag square request", in)
+
+	var lastSignInTimeStamp int64 = time.Now().UnixMicro() + 1
+	if in.LastSigninId != "" {
+		var lastSignInId model.FlagInfo
+		err := database.GetDB().Model(&model.FlagInfo{}).Where("id = ?", in.LastSigninId).Find(&lastSignInId).Error
+		if err != nil {
+			log.Println("error getting last sign in info", err)
+			return nil, err
+		}
+		lastSignInTimeStamp = lastSignInId.CreatedAt
+	}
+
+	var flags []model.FlagInfo
+	err := database.GetDB().Model(&model.SignIn{}).Where("created_at < ?", lastSignInTimeStamp).Limit(int(in.PageSize)).Find(&flags).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return nil, err
+	}
+
+	reply := &flagspb.FetchFlagSquareReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}
+	searchFlagInfoReq := &flagspb.GetFlagDetailRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+	}
+	searchUserReq := &userpb.GetUserInfoRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+	}
+	for _, item := range flags {
+		flag, err := helper.TypeConverter[cdr.FlagSquareItemInfo](item)
+		if err != nil {
+			log.Println("error converting flag", err)
+			return nil, err
+		}
+		searchFlagInfoReq.FlagId = item.ID
+		flagDetailReply, err := s.GetFlagDetail(ctx, searchFlagInfoReq)
+		if err != nil {
+			log.Println("error getting flag detail", err)
+			return nil, err
+		}
+		searchUserReq.UserId = item.UserID
+		userInfoReply, err := user.GetClient().GetUserInfo(ctx, searchUserReq)
+		if err != nil {
+			log.Println("error getting user info", err)
+			return nil, err
+		}
+
+		flag.UserName = userInfoReply.UserInfo.Name
+		flag.SigninId = item.ID
+		flag.FlagName = flagDetailReply.Info.Name
+		flag.ChallengeNum = flagDetailReply.Info.ChallengeNum
+		// TODO: need to get the number of people who have signed in the siege table
+		flag.SiegeNum = 0
+		reply.Flags = append(reply.Flags, flag)
+	}
+	return reply, nil
+}

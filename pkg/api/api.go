@@ -3,16 +3,10 @@ package api
 import (
 	"context"
 	"log"
-	"math/rand"
 	"net"
 	"os"
-	"strconv"
-	"time"
 
 	apipb "github.com/leepala/OldGeneralBackend/Proto/api"
-	"github.com/leepala/OldGeneralBackend/Proto/cdr"
-	"github.com/leepala/OldGeneralBackend/Proto/flags"
-	uuid "github.com/satori/go.uuid"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -49,27 +43,4 @@ func StartAndListen() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-}
-
-func (s *server) FetchFlagSquare(ctx context.Context, in *flags.FetchFlagSquareRequest) (*flags.FetchFlagSquareReply, error) {
-	log.Println("fetch flag square request", in)
-	reply := &flags.FetchFlagSquareReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-	}
-	for i := 0; i < int(in.PageSize); i++ {
-		flag := &cdr.FlagSquareItemInfo{
-			SigninId:      uuid.NewV4().String(),
-			UserName:      "MrLeea",
-			FlagName:      "flag" + strconv.Itoa(i),
-			TotalTime:     rand.Int63n(100) + 10,
-			CurrentTime:   rand.Int63n(10),
-			PayMoney:      rand.Int63n(1000),
-			SiegeNum:      rand.Int63n(1000),
-			SigninPicture: "https://img1.baidu.com/it/u=413417701,3210171500&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500",
-		}
-
-		reply.Flags = append(reply.Flags, flag)
-	}
-	return reply, nil
 }
