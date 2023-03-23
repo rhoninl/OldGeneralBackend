@@ -121,6 +121,7 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 
 	f.UserAvatar = userInfoReply.UserInfo.Avatar
 	f.UserName = userInfoReply.UserInfo.Name
+	f.SignUpId = getSignInlist(flag.ID)
 
 	var reply = &flagspb.GetFlagDetailReply{
 		RequestId: in.RequestId,
@@ -264,4 +265,18 @@ func (s *server) GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoReq
 		Info:      signIn,
 	}
 	return reply, nil
+}
+
+func getSignInlist(flagId string) []string {
+	var signInfos []*model.SignIn
+	err := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flagId).Find(&signInfos).Error
+	if err != nil {
+		log.Println("error getting sign in info", err)
+		return nil
+	}
+	var signList []string
+	for _, item := range signInfos {
+		signList = append(signList, item.ID)
+	}
+	return signList
 }
