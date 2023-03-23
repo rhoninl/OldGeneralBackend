@@ -114,14 +114,9 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 		return nil, err
 	}
 
-	f.SignUpId = make([]string, 0)
-	for _, item := range signInfos {
-		f.SignUpId = append(f.SignUpId, item.ID)
-	}
-
 	f.UserAvatar = userInfoReply.UserInfo.Avatar
 	f.UserName = userInfoReply.UserInfo.Name
-	f.SignUpId = getSignInlist(flag.ID)
+	f.SignUpInfo = getSignInlist(flag.ID)
 
 	var reply = &flagspb.GetFlagDetailReply{
 		RequestId: in.RequestId,
@@ -267,16 +262,21 @@ func (s *server) GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoReq
 	return reply, nil
 }
 
-func getSignInlist(flagId string) []string {
+func getSignInlist(flagId string) []*cdr.SignInInfo {
 	var signInfos []*model.SignIn
 	err := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flagId).Find(&signInfos).Error
 	if err != nil {
 		log.Println("error getting sign in info", err)
 		return nil
 	}
-	var signList []string
+	var signList []*cdr.SignInInfo
 	for _, item := range signInfos {
-		signList = append(signList, item.ID)
+		flagItem, err := helper.TypeConverter[cdr.SignInInfo](item)
+		if err != nil {
+			log.Println("error converting sign in info", err)
+			return nil
+		}
+		signList = append(signList, flagItem)
 	}
 	return signList
 }

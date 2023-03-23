@@ -44,7 +44,7 @@ message FlagDetailInfo {
     int64 challenge_num = 11;
     int64 siege_num = 12;
     int64 star_num = 13;
-    repeated string sign_up_id = 14;
+    repeated SignInInfo sign_up_info = 14;
 }
 
 message FlagSquareItemInfo {
