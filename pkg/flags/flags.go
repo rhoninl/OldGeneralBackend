@@ -79,6 +79,11 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flagspb.SearchMyFlagReque
 			log.Println("error converting flag", err)
 			return nil, err
 		}
+		err = database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Count(&f.CurrentTime).Error
+		if err != nil {
+			log.Println("error getting sign in info", err)
+			return nil, err
+		}
 		reply.Flags = append(reply.Flags, f)
 	}
 	return reply, nil
@@ -182,7 +187,7 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 	var lastSignInTimeStamp int64 = time.Now().UnixMicro() + 1
 	if in.LastSigninId != "" {
 		var lastSignInId model.FlagInfo
-		err := database.GetDB().Model(&model.FlagInfo{}).Where("id = ?", in.LastSigninId).Find(&lastSignInId).Error
+		err := database.GetDB().Model(&model.FlagInfo{}).Where("id = ?", in.LastSigninId).Order("created_at DESC").Find(&lastSignInId).Error
 		if err != nil {
 			log.Println("error getting last sign in info", err)
 			return nil, err
