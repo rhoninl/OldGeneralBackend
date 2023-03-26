@@ -8,7 +8,7 @@ import (
 	"github.com/leepala/OldGeneralBackend/pkg/wallet"
 )
 
-func (s *server) GetCurrentMoney(ctx context.Context, in *walletpb.GetCurrentGoldRequest) (*walletpb.GetCurrentGoldReply, error) {
+func (s *server) GetCurrentGold(ctx context.Context, in *walletpb.GetCurrentGoldRequest) (*walletpb.GetCurrentGoldReply, error) {
 	log.Println("get current money request", in.RequestId, in.UserId)
 	return wallet.GetClient().GetCurrentGold(ctx, in)
 }
