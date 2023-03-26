@@ -19,6 +19,8 @@ service api {
     // wallet
     rpc GetCurrentGold(wallet.GetCurrentGoldRequest) returns (wallet.GetCurrentGoldReply);
     rpc UpdateGold(wallet.UpdateGoldRequest) returns (wallet.UpdateGoldReply);
+    rpc FetchWaterFlow(wallet.FetchWaterFlowRequest) returns (wallet.FetchWaterFlowReply);
+
 
     // vip
     rpc ChargeVipRequest(vip.ChargeVipRequest) returns (vip.ChargeVipReply);

@@ -6,9 +6,11 @@ import "Proto/cdr/cdr.proto";
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/wallet";
 
 service Wallet {
-    rpc GetCurrentGold(wallet.GetCurrentGoldRequest) returns (wallet.GetCurrentGoldReply);
-    rpc UpdateGold(wallet.UpdateGoldRequest) returns (wallet.UpdateGoldReply);
-    rpc InitWallet(wallet.InitWalletRequest) returns (wallet.InitWalletReply);
+    rpc GetCurrentGold(GetCurrentGoldRequest) returns (GetCurrentGoldReply);
+    rpc UpdateGold(UpdateGoldRequest) returns (UpdateGoldReply);
+    rpc InitWallet(InitWalletRequest) returns (InitWalletReply);
+
+    rpc FetchWaterFlow(FetchWaterFlowRequest) returns (FetchWaterFlowReply);
 }
 
 message GetCurrentGoldRequest {
@@ -28,6 +30,7 @@ message UpdateGoldRequest {
     int64 request_time = 2;
     string user_id = 3;
     int64 gold_num = 4;
+    string content = 5;
 }
 
 message UpdateGoldReply {
@@ -35,7 +38,7 @@ message UpdateGoldReply {
     int64 reply_time = 2;
 }
 
-message GetWaterFlowRequest {
+message FetchWaterFlowRequest {
     string request_id = 1;
     int64 request_time = 2;
     string user_id = 3;
@@ -43,7 +46,7 @@ message GetWaterFlowRequest {
     int64 page_size = 5;
 }
 
-message GetWaterFlowReply {
+message FetchWaterFlowReply {
     string request_id = 1;
     int64 reply_time = 2;
     repeated cdr.WaterFlow water_flow = 4;
