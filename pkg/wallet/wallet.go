@@ -120,7 +120,7 @@ func AddWaterFullRecord(txn *gorm.DB, userId string, goldNum int64, content stri
 func (s *server) FetchWaterFlow(ctx context.Context, in *walletpb.FetchWaterFlowRequest) (*walletpb.FetchWaterFlowReply, error) {
 	log.Println("fetch water flow request", in.RequestId, in.UserId)
 	var waterFlowRecords []*model.WaterFlow
-	err := database.GetDB().Model(&model.WaterFlow{}).Where("user_id = ?", in.UserId).Order("created_at DESC").Offset(int(in.PageNum * in.PageSize)).Offset(int(in.PageSize)).Find(&waterFlowRecords).Error
+	err := database.GetDB().Model(&model.WaterFlow{}).Where("user_id = ?", in.UserId).Order("created_at DESC").Offset(int(in.PageNum * in.PageSize)).Limit(int(in.PageSize)).Find(&waterFlowRecords).Error
 	if err != nil {
 		log.Printf("cannot get waterFlow records by user id: %s, error: %s", in.UserId, err)
 		return nil, errors.New("Cannot find waterFlow records")
