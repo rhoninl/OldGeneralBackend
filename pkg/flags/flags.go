@@ -33,7 +33,7 @@ func StartAndListen() {
 	}
 	s := grpc.NewServer()
 	flagspb.RegisterFlagsServer(s, &server{})
-	log.Println("API Server is listening on port", listenPort)
+	log.Println("Flags Server is listening on port", listenPort)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

@@ -9,10 +9,12 @@ import (
 
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
 	userpb "github.com/leepala/OldGeneralBackend/Proto/user"
+	walletpb "github.com/leepala/OldGeneralBackend/Proto/wallet"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
 	"github.com/leepala/OldGeneralBackend/pkg/user"
+	"github.com/leepala/OldGeneralBackend/pkg/wallet"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 )
@@ -99,6 +101,17 @@ func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (
 	_, err = user.GetClient().InitUserInfo(ctx, initRequest)
 	if err != nil {
 		log.Println("Error to init user info", err)
+		return nil, err
+	}
+
+	initWalletRequest := &walletpb.InitWalletRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+		UserId:      userInfo.ID,
+	}
+	_, err = wallet.GetClient().InitWallet(ctx, initWalletRequest)
+	if err != nil {
+		log.Println("Error to init wallet", err)
 		return nil, err
 	}
 

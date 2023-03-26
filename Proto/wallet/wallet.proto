@@ -5,26 +5,32 @@ import "Proto/cdr/cdr.proto";
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/wallet";
 
-message GetCurrentMoneyRequest {
+service Wallet {
+    rpc GetCurrentGold(wallet.GetCurrentGoldRequest) returns (wallet.GetCurrentGoldReply);
+    rpc UpdateGold(wallet.UpdateGoldRequest) returns (wallet.UpdateGoldReply);
+    rpc InitWallet(wallet.InitWalletRequest) returns (wallet.InitWalletReply);
+}
+
+message GetCurrentGoldRequest {
     string request_id = 1;
     int64 request_time = 2;
     string user_id = 3;
 }
 
-message GetCurrentMoneyReply {
+message GetCurrentGoldReply {
     string request_id = 1;
     int64 reply_time = 2;
-    int64 money = 3;
+    int64 gold_num = 3;
 }
 
-message UpdateMoneyRequest {
+message UpdateGoldRequest {
     string request_id = 1;
     int64 request_time = 2;
     string user_id = 3;
-    int64 money = 4;
+    int64 gold_num = 4;
 }
 
-message UpdateMoneyReply {
+message UpdateGoldReply {
     string request_id = 1;
     int64 reply_time = 2;
 }
@@ -41,4 +47,15 @@ message GetWaterFlowReply {
     string request_id = 1;
     int64 reply_time = 2;
     repeated cdr.WaterFlow water_flow = 4;
+}
+
+message InitWalletRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+}
+
+message InitWalletReply {
+    string request_id = 1;
+    int64 reply_time = 2;
 }

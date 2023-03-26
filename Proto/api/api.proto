@@ -17,8 +17,8 @@ service api {
     rpc IAMCheckLoginStatus(iam.IamCheckStatusRequest) returns (iam.IamCheckStatusReply);
 
     // wallet
-    rpc GetCurrentMoney(wallet.GetCurrentMoneyRequest) returns (wallet.GetCurrentMoneyReply);
-    rpc UpdateMoney(wallet.UpdateMoneyRequest) returns (wallet.UpdateMoneyReply);
+    rpc GetCurrentGold(wallet.GetCurrentGoldRequest) returns (wallet.GetCurrentGoldReply);
+    rpc UpdateGold(wallet.UpdateGoldRequest) returns (wallet.UpdateGoldReply);
 
     // vip
     rpc ChargeVipRequest(vip.ChargeVipRequest) returns (vip.ChargeVipReply);

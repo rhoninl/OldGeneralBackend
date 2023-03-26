@@ -59,10 +59,10 @@ message FlagSquareItemInfo {
 }
 
 message WaterFlow {
-    string water_flow_id = 1;
-    int64 timestamp = 2;
-    string flag_name = 3;
-    int64 money_diff = 4;
+    string id = 1;
+    int64 created_at = 2;
+    string content = 3;
+    int64 gold_num = 4;
 }
 
 message SignInInfo {
