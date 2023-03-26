@@ -102,7 +102,7 @@ func (s *server) InitUserInfo(ctx context.Context, in *userpb.InitUserInfoReques
 	log.Println("init user info request userId ", in.UserId)
 	userInfo := &model.UserInfo{
 		ID:        in.UserId,
-		Name:      "将军",
+		Name:      "将军" + helper.GenerateRandInt(5),
 		Gender:    "男",
 		CreatedAt: time.Now().UnixMicro(),
 		Avatar:    defaultAvatar,
