@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: database-secret
-                  key: wallet_password
+                  key: user_password
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
