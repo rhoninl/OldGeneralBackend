@@ -1,4 +1,4 @@
--- Active: 1678972307496@@oldgeneral.top@33306@oldgeneral
+-- Active: 1679535082690@@oldgeneral.top@33306@oldgeneral
 
 Create Table
     `user` (
@@ -42,5 +42,23 @@ Create Table
         `total_time` INT NOT NULL,
         `content` varchar(255) NOT NULL,
         `picture_url` text NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `Wallet` (
+        `id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `gold_num` BIGINT NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `water_flow` (
+        `id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `gold_num` BIGINT NOT NULL,
+        `created_at` BIGINT,
+        `content` varchar(255) NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
