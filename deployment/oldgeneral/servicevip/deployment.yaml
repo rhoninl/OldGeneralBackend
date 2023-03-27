@@ -21,7 +21,7 @@ spec:
           env:
             - name: ListenPort
               value: ":30001"
-            - name: DB_vip
+            - name: DB_USER
               value: caocao
             - name: DB_ADDRESS
               value: mysql.database.svc.cluster.local
