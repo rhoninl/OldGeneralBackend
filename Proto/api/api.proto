@@ -23,7 +23,7 @@ service api {
 
 
     // vip
-    rpc ChargeVipRequest(vip.ChargeVipRequest) returns (vip.ChargeVipReply);
+    rpc ChargeVip(vip.ChargeVipRequest) returns (vip.ChargeVipReply);
     rpc GetVipStatus(vip.GetVipStatusRequest) returns (vip.GetVipStatusReply);
 
     // userInfo

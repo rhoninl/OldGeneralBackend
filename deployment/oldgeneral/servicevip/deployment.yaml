@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicevip
+  namespace: oldgeneral
+spec:
+  selector:
+    matchLabels:
+      app: servicevip
+  template:
+    metadata:
+      labels:
+        app: servicevip
+    spec:
+      containers:
+        - name: servicevip
+          image: swr.cn-north-4.myhuaweicloud.com/oldgeneral/servicevip:nightly
+          resources:
+          ports:
+            - containerPort: 30001
+          env:
+            - name: ListenPort
+              value: ":30001"
+            - name: DB_vip
+              value: caocao
+            - name: DB_ADDRESS
+              value: mysql.database.svc.cluster.local
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: oldgeneral
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: user_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicevip
+  namespace: oldgeneral
+spec:
+  selector:
+    app: servicevip
+  ports:
+    - port: 30001
+      targetPort: 30001
+      protocol: TCP
+  type: ClusterIP

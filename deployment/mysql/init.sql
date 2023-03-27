@@ -62,3 +62,12 @@ Create Table
         `content` varchar(255) NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `vip` (
+        `id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `start_time` BIGINT,
+        `end_time` BIGINT,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
