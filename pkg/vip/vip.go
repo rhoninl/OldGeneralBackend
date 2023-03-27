@@ -37,20 +37,26 @@ func StartAndListen() {
 
 func (s *server) ChargeVip(ctx context.Context, in *vippb.ChargeVipRequest) (*vippb.ChargeVipReply, error) {
 	log.Println("ChargeVip request", in.RequestId, in.UserId)
-	var vipInfo = &model.Vip{
-		ID:     uuid.NewV4().String(),
-		UserID: in.UserId,
-	}
-	err := database.GetDB().Model(&vipInfo).Where("user_id = ?", in.UserId).FirstOrInit(&vipInfo, vipInfo).Error
+	var vipInfo = &model.Vip{}
+	err := database.GetDB().Model(&vipInfo).Where("user_id = ?", in.UserId).Scan(&vipInfo).Error
 	if err != nil {
 		log.Printf("cannot get vip info by user id: %s, error: %s", in.UserId, err)
 		return nil, err
+	}
+	if vipInfo.StartTime == 0 {
+		vipInfo.ID = uuid.NewV4().String()
+		vipInfo.UserID = in.UserId
 	}
 	if vipInfo.EndTime < time.Now().UnixMicro() {
 		vipInfo.StartTime = time.Now().UnixMicro()
 		vipInfo.EndTime = vipInfo.StartTime
 	}
 	vipInfo.EndTime += in.ChargeDuration
+	err = database.GetDB().Model(&vipInfo).Where("user_id = ?", in.UserId).Save(&vipInfo).Error
+	if err != nil {
+		log.Printf("cannot save vip info by user id: %s, error: %s", in.UserId, err)
+		return nil, err
+	}
 
 	var reply = &vippb.ChargeVipReply{
 		RequestId: in.RequestId,
