@@ -8,7 +8,6 @@ import (
 
 	vippb "github.com/leepala/OldGeneralBackend/Proto/vip"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
-	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
 	uuid "github.com/satori/go.uuid"
 
@@ -38,18 +37,13 @@ func StartAndListen() {
 
 func (s *server) ChargeVip(ctx context.Context, in *vippb.ChargeVipRequest) (*vippb.ChargeVipReply, error) {
 	log.Println("ChargeVip request", in.RequestId, in.UserId)
-	userId, err := helper.GetUserIdFromContext(ctx)
-	if err != nil {
-		log.Printf("cannot get user id from context, error: %s", err)
-		return nil, err
-	}
 	var vipInfo = &model.Vip{
 		ID:     uuid.NewV4().String(),
-		UserID: userId,
+		UserID: in.UserId,
 	}
-	err = database.GetDB().Model(&vipInfo).Where("user_id = ?", userId).FirstOrInit(&vipInfo, vipInfo).Error
+	err := database.GetDB().Model(&vipInfo).Where("user_id = ?", in.UserId).FirstOrInit(&vipInfo, vipInfo).Error
 	if err != nil {
-		log.Printf("cannot get vip info by user id: %s, error: %s", userId, err)
+		log.Printf("cannot get vip info by user id: %s, error: %s", in.UserId, err)
 		return nil, err
 	}
 	if vipInfo.EndTime < time.Now().UnixMicro() {
