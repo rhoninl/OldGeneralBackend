@@ -1,6 +1,6 @@
 PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-build-image: build-image-api build-image-iam build-image-user build-image-flags build-image-wallet
+build-image: build-image-api build-image-iam build-image-user build-image-flags build-image-wallet build-image-vip
 
 build-image-api:
 	docker buildx build --platform=linux/amd64 \
@@ -26,6 +26,11 @@ build-image-wallet:
 	docker buildx build --platform=linux/amd64 \
 	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.wallet . \
 	-t servicewallet:nightly --load
+
+build-image-vip:
+	docker buildx build --platform=linux/amd64 \
+	-f ${PROJECT_ROOT}/dockerfiles/dockerfile.vip . \
+	-t servicevip:nightly --load
 
 test: fmt
 	go test -v -race -coverprofile=coverage.out -covermode=atomic $(shell go list ./...)

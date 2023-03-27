@@ -47,11 +47,13 @@ jobs:
           docker tag serviceuser:nightly ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
           docker tag serviceflags:nightly ${{ env.DOCKER_REGISTRY }}/serviceflags:${{ github.run_id }}
           docker tag servicewallet:nightly ${{ env.DOCKER_REGISTRY }}/servicewallet:${{ github.run_id }}
+          docker tag servicevip:nightly ${{ env.DOCKER_REGISTRY }}/servicevip:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceapi:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceiam:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceuser:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/serviceflags:${{ github.run_id }}
           docker push ${{ env.DOCKER_REGISTRY }}/servicewallet:${{ github.run_id }}
+          docker push ${{ env.DOCKER_REGISTRY }}/servicevip:${{ github.run_id }}
 
       - name: Patch ServiceAPI Image tag
         uses: steebchen/kubectl@v2.1.1
@@ -82,3 +84,9 @@ jobs:
         with:
           config: ${{ secrets.KUBECONFIG }}
           command: set image deployment -n oldgeneral servicewallet servicewallet=${{ env.DOCKER_REGISTRY }}/servicewallet:${{ github.run_id }}
+
+      - name: Patch ServiceVIP Image tag
+        uses: steebchen/kubectl@v2.1.1
+        with:
+          config: ${{ secrets.KUBECONFIG }}
+          command: set image deployment -n oldgeneral servicevip servicevip=${{ env.DOCKER_REGISTRY }}/servicevip:${{ github.run_id }}
