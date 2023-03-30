@@ -1,4 +1,4 @@
--- Active: 1679535082690@@oldgeneral.top@33306@oldgeneral
+-- Active: 1678972307496@@oldgeneral.top@33306@oldgeneral
 
 Create Table
     `user` (
@@ -69,5 +69,33 @@ Create Table
         `user_id` varchar(40) NOT NULL,
         `start_time` BIGINT,
         `end_time` BIGINT,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `siege` (
+        `id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `flag_id` varchar(40) NOT NULL,
+        `created_at` BIGINT,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `comment` (
+        `id` varchar(40) NOT NULL,
+        `user_id` varchar(40) NOT NULL,
+        `signin_id` varchar(40) NOT NULL,
+        `content` text NOT NULL,
+        `created_at` BIGINT,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+Create Table
+    `props` (
+        `id` varchar(40) NOT NULL,
+        `flag_id` varchar(40) NOT NULL,
+        `type` INT NOT NULL,
+        `use_at` BIGINT,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;

@@ -39,10 +39,16 @@ service api {
     rpc GetFlagDetail(flags.GetFlagDetailRequest) returns (flags.GetFlagDetailReply);
     rpc CreateFlag(flags.CreateFlagRequest) returns (flags.CreateFlagReply);
     rpc FetchFlagSquare(flags.FetchFlagSquareRequest) returns (flags.FetchFlagSquareReply);
+    rpc SearchFlag(flags.SearchFlagRequest) returns (flags.SearchFlagReply) {}
+    // flags.signin
     rpc GetSignInInfo(flags.GetSignInInfoRequest) returns (flags.GetSignInInfoReply);
+    rpc SignInFlag(flags.SignInFlagRequest) returns (flags.SignInFlagReply) {}
+    // flags.siege
     rpc SiegeFlag(flags.SiegeFlagRequest) returns (flags.SiegeFlagReply){}
-    rpc FetchSiege(flags.FetchSiegeRequest) returns (flags.FetchSiegeReply) {}
+    rpc GetMySiegeNum(flags.GetMySiegeNumRequest) returns (flags.GetMySiegeNumReply) {}
+    rpc FetchMySiege(flags.FetchMySiegeRequest) returns (flags.FetchMySiegeReply) {}
+    rpc CheckIsSiege(flags.CheckIsSiegeRequest) returns (flags.CheckIsSiegeReply) {}
+    // flags.comment
     rpc PostComment(flags.PostCommentRequest) returns (flags.PostCommentReply) {}
     rpc FetchComment(flags.FetchCommentRequest) returns (flags.FetchCommentReply) {}
-    rpc SearchFlag(flags.SearchFlagRequest) returns (flags.SearchFlagReply) {}
 }

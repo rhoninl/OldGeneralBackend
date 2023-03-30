@@ -11,12 +11,15 @@ service flags {
     rpc GetFlagDetail(GetFlagDetailRequest) returns (GetFlagDetailReply) {}
     rpc CreateFlag(CreateFlagRequest) returns (CreateFlagReply) {}
     rpc FetchFlagSquare(FetchFlagSquareRequest) returns (FetchFlagSquareReply) {}
+    rpc SearchFlag(SearchFlagRequest) returns (SearchFlagReply) {}
+
     rpc GetSignInInfo(GetSignInInfoRequest) returns (GetSignInInfoReply) {}
     rpc SignInFlag(SignInFlagRequest) returns (SignInFlagReply) {}
-    rpc SearchFlag(SearchFlagRequest) returns (SearchFlagReply) {}
     // siege
     rpc SiegeFlag(SiegeFlagRequest) returns (SiegeFlagReply){}
-    rpc FetchSiege(FetchSiegeRequest) returns (FetchSiegeReply) {}
+    rpc GetMySiegeNum(GetMySiegeNumRequest) returns (GetMySiegeNumReply) {}
+    rpc FetchMySiege(FetchMySiegeRequest) returns (FetchMySiegeReply) {}
+    rpc CheckIsSiege(CheckIsSiegeRequest) returns (CheckIsSiegeReply) {}
     // comment
     rpc PostComment(PostCommentRequest) returns (PostCommentReply) {}
     rpc FetchComment(FetchCommentRequest) returns (FetchCommentReply) {}
@@ -110,14 +113,15 @@ message SiegeFlagReply {
     int64 reply_time = 2;
 }
 
-message FetchSiegeRequest {
+message FetchMySiegeRequest {
     string request_id = 1;
     int64 request_time = 2;
-    string flag_id = 3;
-    string last_siege_id = 4;
+    string user_id = 3;
+    int64 page_size = 4;
+    string last_siege_id = 5;
 }
 
-message FetchSiegeReply {
+message FetchMySiegeReply {
     string request_id = 1;
     int64 reply_time = 2;
     repeated cdr.SiegeInfo sieges = 3;
@@ -182,4 +186,29 @@ message ResurrectRequest{
 message ResurrectReply {
     string request_id = 1;
     int64 reply_time = 2;
+}
+
+message CheckIsSiegeRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+    string flag_id = 4;
+}
+
+message CheckIsSiegeReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    bool is_siege = 3;
+}
+
+message GetMySiegeNumRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+}
+
+message GetMySiegeNumReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    int64 num = 3;
 }
