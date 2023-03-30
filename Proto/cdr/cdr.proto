@@ -73,3 +73,18 @@ message SignInInfo {
     int64 current_time = 5;
     int64 created_at = 6;
 }
+
+message SiegeInfo {
+    string id = 1;
+    string flag_id = 2;
+    string user_id = 3;
+    int64 created_at = 4;
+}
+
+message CommentInfo {
+    string id = 1;
+    string signin_id = 2;
+    string user_id = 3;
+    string content = 4;
+    int64 created_at = 5;
+}

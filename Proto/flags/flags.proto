@@ -13,6 +13,16 @@ service flags {
     rpc FetchFlagSquare(FetchFlagSquareRequest) returns (FetchFlagSquareReply) {}
     rpc GetSignInInfo(GetSignInInfoRequest) returns (GetSignInInfoReply) {}
     rpc SignInFlag(SignInFlagRequest) returns (SignInFlagReply) {}
+    rpc SearchFlag(SearchFlagRequest) returns (SearchFlagReply) {}
+    // siege
+    rpc SiegeFlag(SiegeFlagRequest) returns (SiegeFlagReply){}
+    rpc FetchSiege(FetchSiegeRequest) returns (FetchSiegeReply) {}
+    // comment
+    rpc PostComment(PostCommentRequest) returns (PostCommentReply) {}
+    rpc FetchComment(FetchCommentRequest) returns (FetchCommentReply) {}
+    // skip
+    rpc AskForSkip(AskForSkipRequest) returns (AskForSkipReply) {}
+    rpc Resurrect(ResurrectRequest) returns (ResurrectReply) {}
 }
 
 message SearchMyFlagRequest {
@@ -83,6 +93,93 @@ message SignInFlagRequest {
 }
 
 message SignInFlagReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+}
+
+message SiegeFlagRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+    string flag_id = 4;
+    int64 siege_num = 5;
+}
+
+message SiegeFlagReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+}
+
+message FetchSiegeRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string flag_id = 3;
+    string last_siege_id = 4;
+}
+
+message FetchSiegeReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    repeated cdr.SiegeInfo sieges = 3;
+}
+
+message PostCommentRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    cdr.CommentInfo comment = 4;
+}
+
+message PostCommentReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+}
+
+message FetchCommentRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string signin_id = 3;
+    string last_comment_id = 4;
+}
+
+message FetchCommentReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    repeated cdr.CommentInfo comments = 3;
+}
+
+message SearchFlagRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string key_word = 3;
+    string last_flag_id = 4;
+}
+
+message SearchFlagReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+    repeated cdr.FlagSquareItemInfo flags = 3;
+}
+
+message AskForSkipRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+    string flag_id = 4;
+}
+
+message AskForSkipReply {
+    string request_id = 1;
+    int64 reply_time = 2;
+}
+
+message ResurrectRequest{
+    string request_id = 1;
+    int64 request_time = 2;
+    string user_id = 3;
+    string flag_id = 4;
+}
+
+message ResurrectReply {
     string request_id = 1;
     int64 reply_time = 2;
 }

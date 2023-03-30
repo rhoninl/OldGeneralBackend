@@ -40,5 +40,9 @@ service api {
     rpc CreateFlag(flags.CreateFlagRequest) returns (flags.CreateFlagReply);
     rpc FetchFlagSquare(flags.FetchFlagSquareRequest) returns (flags.FetchFlagSquareReply);
     rpc GetSignInInfo(flags.GetSignInInfoRequest) returns (flags.GetSignInInfoReply);
-    rpc SignInFlag(flags.SignInFlagRequest) returns (flags.SignInFlagReply);
+    rpc SiegeFlag(flags.SiegeFlagRequest) returns (flags.SiegeFlagReply){}
+    rpc FetchSiege(flags.FetchSiegeRequest) returns (flags.FetchSiegeReply) {}
+    rpc PostComment(flags.PostCommentRequest) returns (flags.PostCommentReply) {}
+    rpc FetchComment(flags.FetchCommentRequest) returns (flags.FetchCommentReply) {}
+    rpc SearchFlag(flags.SearchFlagRequest) returns (flags.SearchFlagReply) {}
 }
