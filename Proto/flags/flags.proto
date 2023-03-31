@@ -143,6 +143,7 @@ message FetchCommentRequest {
     int64 request_time = 2;
     string signin_id = 3;
     string last_comment_id = 4;
+    int64 page_size = 5;
 }
 
 message FetchCommentReply {
