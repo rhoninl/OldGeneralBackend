@@ -22,6 +22,7 @@ func (s *server) PostComment(ctx context.Context, in *flagspb.PostCommentRequest
 		return nil, err
 	}
 
+	comment.ID = in.Comment.UserInfo.Id
 	err = database.GetDB().Model(&comment).Save(&comment).Error
 	if err != nil {
 		log.Println("error saving comment", err)
