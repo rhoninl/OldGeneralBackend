@@ -49,7 +49,7 @@ func (s *server) FetchComment(ctx context.Context, in *flagspb.FetchCommentReque
 		lastCommentTimeStamp = lastSignInId.CreatedAt
 	}
 	var comments []model.Comment
-	err := database.GetDB().Model(&model.Comment{}).Where("singin_id = ?", in.SigninId).Where("created_at < ?", lastCommentTimeStamp).Order("created_at desc").Limit(int(in.PageSize)).Find(&comments).Error
+	err := database.GetDB().Model(&model.Comment{}).Where("signin_id = ?", in.SigninId).Where("created_at < ?", lastCommentTimeStamp).Order("created_at desc").Limit(int(in.PageSize)).Find(&comments).Error
 	if err != nil {
 		log.Println("error getting comments", err)
 		return nil, err
