@@ -7,9 +7,11 @@ import (
 
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	flagspb "github.com/leepala/OldGeneralBackend/Proto/flags"
+	userpb "github.com/leepala/OldGeneralBackend/Proto/user"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	"github.com/leepala/OldGeneralBackend/pkg/user"
 )
 
 func (s *server) PostComment(ctx context.Context, in *flagspb.PostCommentRequest) (*flagspb.PostCommentReply, error) {
@@ -35,7 +37,6 @@ func (s *server) PostComment(ctx context.Context, in *flagspb.PostCommentRequest
 
 func (s *server) FetchComment(ctx context.Context, in *flagspb.FetchCommentRequest) (*flagspb.FetchCommentReply, error) {
 	log.Println("fetch comment request", in)
-
 	var lastCommentTimeStamp int64 = time.Now().UnixMicro() + 1
 	if in.LastCommentId != "" {
 		var lastSignInId model.FlagInfo
@@ -53,6 +54,10 @@ func (s *server) FetchComment(ctx context.Context, in *flagspb.FetchCommentReque
 		return nil, err
 	}
 
+	searchUserReq := &userpb.GetUserInfoRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+	}
 	var commentpbs []*cdr.CommentInfo
 	for _, comment := range comments {
 		commentpb, err := helper.TypeConverter[cdr.CommentInfo](comment)
@@ -60,6 +65,13 @@ func (s *server) FetchComment(ctx context.Context, in *flagspb.FetchCommentReque
 			log.Println("error converting comment", err)
 			return nil, err
 		}
+		searchUserReq.UserId = commentpb.UserId
+		reply, err := user.GetClient().GetUserInfo(ctx, searchUserReq)
+		if err != nil {
+			log.Println("error getting user info", err)
+			return nil, err
+		}
+		commentpb.UserInfo = reply.UserInfo
 		commentpbs = append(commentpbs, commentpb)
 	}
 
