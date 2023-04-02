@@ -52,7 +52,7 @@ func (s *server) SiegeFlag(ctx context.Context, in *flagspb.SiegeFlagRequest) (*
 		RequestId:   in.RequestId,
 		RequestTime: in.RequestTime,
 		UserId:      in.UserId,
-		GoldNum:     10,
+		GoldNum:     -10,
 		Content:     "围观Flag: " + flag.Name,
 	}
 	_, err = wallet.GetClient().UpdateGold(ctx, updateGoldRequest)
