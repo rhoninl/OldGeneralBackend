@@ -88,7 +88,7 @@ func (s *server) GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoReq
 
 func getSignInlist(flagId string) []*cdr.SignInInfo {
 	var signInfos []*model.SignIn
-	err := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flagId).Find(&signInfos).Error
+	err := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flagId).Order("current_time DESC").Find(&signInfos).Error
 	if err != nil {
 		log.Println("error getting sign in info", err)
 		return nil
