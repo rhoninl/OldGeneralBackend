@@ -121,6 +121,7 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 	f.UserAvatar = userInfoReply.UserInfo.Avatar
 	f.UserName = userInfoReply.UserInfo.Name
 	f.SignUpInfo = getSignInlist(flag.ID)
+	f.SiegeNum = getSiegeNumByFlagId(flag.ID)
 
 	var reply = &flagspb.GetFlagDetailReply{
 		RequestId: in.RequestId,

@@ -155,3 +155,13 @@ func (s *server) FetchMySiege(ctx context.Context, in *flagspb.FetchMySiegeReque
 	}
 	return reply, nil
 }
+
+func getSiegeNumByFlagId(flagId string) int64 {
+	var counter int64
+	err := database.GetDB().Model(&model.Siege{}).Where("flag_id = ?", flagId).Count(&counter).Error
+	if err != nil {
+		log.Println("error getting siege info", err)
+		return 0
+	}
+	return counter
+}
