@@ -65,7 +65,7 @@ func (s *server) FetchComment(ctx context.Context, in *flagspb.FetchCommentReque
 			log.Println("error converting comment", err)
 			return nil, err
 		}
-		searchUserReq.UserId = commentpb.UserId
+		searchUserReq.UserId = comment.UserID
 		reply, err := user.GetClient().GetUserInfo(ctx, searchUserReq)
 		if err != nil {
 			log.Println("error getting user info", err)
