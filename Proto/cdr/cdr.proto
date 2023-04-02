@@ -4,6 +4,12 @@ package cdr;
 
 option go_package = "github.com/leepala/OldGeneralBackend/Proto/cdr";
 
+enum prop_type {
+    nonoe = 0;
+    skip = 1;
+    resurrection = 2;
+}
+
 message User {
     string user_id = 1;
     string user_name = 2;

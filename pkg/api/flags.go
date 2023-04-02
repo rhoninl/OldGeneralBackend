@@ -72,3 +72,13 @@ func (s *server) FetchComment(ctx context.Context, in *flagspb.FetchCommentReque
 	log.Println("fetch comment request", in)
 	return flags.GetClient().FetchComment(ctx, in)
 }
+
+func (s *server) AskForSkip(ctx context.Context, in *flagspb.AskForSkipRequest) (*flagspb.AskForSkipReply, error) {
+	log.Println("ask for skip request", in)
+	return flags.GetClient().AskForSkip(ctx, in)
+}
+
+func (s *server) Resurrect(ctx context.Context, in *flagspb.ResurrectRequest) (*flagspb.ResurrectReply, error) {
+	log.Println("resurrect request", in)
+	return flags.GetClient().Resurrect(ctx, in)
+}

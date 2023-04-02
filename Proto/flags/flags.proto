@@ -23,7 +23,7 @@ service flags {
     // comment
     rpc PostComment(PostCommentRequest) returns (PostCommentReply) {}
     rpc FetchComment(FetchCommentRequest) returns (FetchCommentReply) {}
-    // skip
+    // props
     rpc AskForSkip(AskForSkipRequest) returns (AskForSkipReply) {}
     rpc Resurrect(ResurrectRequest) returns (ResurrectReply) {}
 }
