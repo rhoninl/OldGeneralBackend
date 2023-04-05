@@ -164,7 +164,7 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 	}
 
 	var signIns []model.SignIn
-	err := database.GetDB().Model(&model.SignIn{}).Where("created_at < ?", lastSignInTimeStamp).Order("created_at DESC").Limit(int(in.PageSize)).Find(&signIns).Error
+	err := database.GetDB().Model(&model.SignIn{}).Where("isSkip = 0").Where("created_at < ?", lastSignInTimeStamp).Order("created_at DESC").Limit(int(in.PageSize)).Find(&signIns).Error
 	if err != nil {
 		log.Println("error getting flag info", err)
 		return nil, err
