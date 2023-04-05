@@ -131,6 +131,8 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 		log.Println("error getting used props info", err)
 		return nil, err
 	}
+	f.SiegeNum = getSiegeNumByFlagId(flag.ID)
+
 	var reply = &flagspb.GetFlagDetailReply{
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),

@@ -94,7 +94,7 @@ message SiegeInfo {
 message CommentInfo {
     string id = 1;
     string signin_id = 2;
-    string user_id = 3;
-    string content = 4;
-    int64 created_at = 5;
+    string content = 3;
+    int64 created_at = 4;
+    optional UserBasicInfo user_info = 5;
 }

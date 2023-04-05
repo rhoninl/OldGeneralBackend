@@ -105,7 +105,6 @@ message SiegeFlagRequest {
     int64 request_time = 2;
     string user_id = 3;
     string flag_id = 4;
-    int64 siege_num = 5;
 }
 
 message SiegeFlagReply {

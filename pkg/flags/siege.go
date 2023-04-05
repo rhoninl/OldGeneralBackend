@@ -8,17 +8,22 @@ import (
 
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	flagspb "github.com/leepala/OldGeneralBackend/Proto/flags"
+	walletpb "github.com/leepala/OldGeneralBackend/Proto/wallet"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	"github.com/leepala/OldGeneralBackend/pkg/wallet"
 	uuid "github.com/satori/go.uuid"
 )
 
 func (s *server) SiegeFlag(ctx context.Context, in *flagspb.SiegeFlagRequest) (*flagspb.SiegeFlagReply, error) {
 	log.Println("siege flag request", in)
 
+	txn := database.GetDB()
+
+	// check flag status
 	var flag model.FlagInfo
-	err := database.GetDB().Model(&flag).Where("id = ?", in.FlagId).Find(&flag).Error
+	err := txn.Model(&flag).Where("id = ?", in.FlagId).Find(&flag).Error
 	if err != nil {
 		log.Println("error getting flag info", err)
 		return nil, err
@@ -29,8 +34,9 @@ func (s *server) SiegeFlag(ctx context.Context, in *flagspb.SiegeFlagRequest) (*
 		return nil, errors.New("flag not running")
 	}
 
+	// check have sieged
 	var counter int64
-	err = database.GetDB().Model(&model.Siege{}).Where("flag_id = ? and user_id = ?", in.FlagId, in.UserId).Count(&counter).Error
+	err = txn.Model(&model.Siege{}).Where("flag_id = ? and user_id = ?", in.FlagId, in.UserId).Count(&counter).Error
 	if err != nil {
 		log.Println("error getting siege info", err)
 		return nil, err
@@ -41,6 +47,21 @@ func (s *server) SiegeFlag(ctx context.Context, in *flagspb.SiegeFlagRequest) (*
 		return nil, errors.New("user already siege")
 	}
 
+	// update money
+	updateGoldRequest := &walletpb.UpdateGoldRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+		UserId:      in.UserId,
+		GoldNum:     -10,
+		Content:     "围观Flag: " + flag.Name,
+	}
+	_, err = wallet.GetClient().UpdateGold(ctx, updateGoldRequest)
+	if err != nil {
+		log.Println("error updating gold", err)
+		return nil, err
+	}
+
+	// try to siege
 	siege := model.Siege{
 		ID:        uuid.NewV4().String(),
 		FlagID:    in.FlagId,
@@ -133,4 +154,14 @@ func (s *server) FetchMySiege(ctx context.Context, in *flagspb.FetchMySiegeReque
 		Sieges:    siegeInfos,
 	}
 	return reply, nil
+}
+
+func getSiegeNumByFlagId(flagId string) int64 {
+	var counter int64
+	err := database.GetDB().Model(&model.Siege{}).Where("flag_id = ?", flagId).Count(&counter).Error
+	if err != nil {
+		log.Println("error getting siege info", err)
+		return 0
+	}
+	return counter
 }
