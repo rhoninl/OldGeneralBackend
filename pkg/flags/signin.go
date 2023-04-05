@@ -93,7 +93,7 @@ func signinFlag(ctx context.Context, txn *gorm.DB, in *flagspb.SignInFlagRequest
 
 func getSignInlist(txn *gorm.DB, flagId string) []*cdr.SignInInfo {
 	var signInfos []*model.SignIn
-	err := txn.Model(&model.SignIn{}).Where("flag_id = ?", flagId).Order("current_time DESC").Find(&signInfos).Error
+	err := txn.Model(&model.SignIn{}).Where("flag_id = ?", flagId).Order("`current_time` DESC").Find(&signInfos).Error
 	if err != nil {
 		log.Println("error getting sign in info", err)
 		return nil
