@@ -51,6 +51,10 @@ message FlagDetailInfo {
     int64 siege_num = 12;
     int64 star_num = 13;
     repeated SignInInfo sign_up_info = 14;
+    int64 total_mask_num = 15;
+    int64 used_mask_num = 16;
+    int64 total_resurrect_num = 17;
+    int64 used_resurrect_num = 18;
 }
 
 message FlagSquareItemInfo {

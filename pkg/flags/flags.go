@@ -2,6 +2,7 @@ package flags
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net"
 	"time"
@@ -91,7 +92,8 @@ func (s *server) SearchMyFlag(ctx context.Context, in *flagspb.SearchMyFlagReque
 func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailRequest) (*flagspb.GetFlagDetailReply, error) {
 	log.Println("get flag detail request", in.RequestId, in.FlagId)
 	var flag model.FlagInfo
-	err := database.GetDB().Model(&flag).Where("id = ?", in.FlagId).Find(&flag).Error
+	txn := database.GetDB()
+	err := txn.Model(&flag).Where("id = ?", in.FlagId).Find(&flag).Error
 	if err != nil {
 		log.Println("error getting flag info", err)
 		return nil, err
@@ -112,7 +114,7 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 		return nil, err
 	}
 	var signInfos []*model.SignIn
-	err = database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Find(&signInfos).Error
+	err = txn.Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Find(&signInfos).Error
 	if err != nil {
 		log.Println("error getting sign in info", err)
 		return nil, err
@@ -121,7 +123,14 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 	f.UserAvatar = userInfoReply.UserInfo.Avatar
 	f.UserName = userInfoReply.UserInfo.Name
 	f.SignUpInfo = getSignInlist(flag.ID)
-
+	var err1, err2 error
+	f.UsedMaskNum, err1 = getSkipCardUsedNum(txn, flag.ID)
+	f.UsedResurrectNum, err2 = getResurrectUsedNum(txn, flag.ID)
+	err = errors.Join(err1, err2)
+	if err != nil {
+		log.Println("error getting used props info", err)
+		return nil, err
+	}
 	var reply = &flagspb.GetFlagDetailReply{
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),

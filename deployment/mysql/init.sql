@@ -29,6 +29,8 @@ Create Table
         `total_time` INT NOT NULL,
         `start_time` BIGINT,
         `challenge_num` INT NOT NULL,
+        `mask_num` INT NOT NULL,
+        `resurrect_num` INT NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 

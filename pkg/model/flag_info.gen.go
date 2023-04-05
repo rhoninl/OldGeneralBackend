@@ -8,14 +8,16 @@ const TableNameFlagInfo = "flag_info"
 
 // FlagInfo mapped from table <flag_info>
 type FlagInfo struct {
-	ID           string `gorm:"column:id;primaryKey" json:"id"`
-	UserID       string `gorm:"column:user_id;not null" json:"user_id"`
-	Name         string `gorm:"column:name;not null" json:"name"`
-	Status       string `gorm:"column:status;not null" json:"status"`
-	CreatedAt    int64  `gorm:"column:created_at" json:"created_at"`
-	TotalTime    int32  `gorm:"column:total_time;not null" json:"total_time"`
-	StartTime    int64  `gorm:"column:start_time" json:"start_time"`
-	ChallengeNum int32  `gorm:"column:challenge_num;not null" json:"challenge_num"`
+	ID                string `gorm:"column:id;primaryKey" json:"id"`
+	UserID            string `gorm:"column:user_id;not null" json:"user_id"`
+	Name              string `gorm:"column:name;not null" json:"name"`
+	Status            string `gorm:"column:status;not null" json:"status"`
+	CreatedAt         int64  `gorm:"column:created_at" json:"created_at"`
+	TotalTime         int32  `gorm:"column:total_time;not null" json:"total_time"`
+	StartTime         int64  `gorm:"column:start_time" json:"start_time"`
+	ChallengeNum      int32  `gorm:"column:challenge_num;not null" json:"challenge_num"`
+	TotalMaskNum      int32  `gorm:"column:total_mask_num;not null" json:"total_mask_num"`
+	TotalResurrectNum int32  `gorm:"column:total_resurrect_num;not null" json:"total_resurrect_num"`
 }
 
 // TableName FlagInfo's table name
