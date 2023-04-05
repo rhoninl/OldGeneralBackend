@@ -46,6 +46,13 @@ func (s *server) CreateFlag(ctx context.Context, in *flagspb.CreateFlagRequest) 
 		log.Println("error converting flag", err)
 		return nil, err
 	}
+	maskNum, err := dayToMaskNum(flag.UserID, int64(flag.TotalTime))
+	if err != nil {
+		log.Println("error converting day to mask num", err)
+		return nil, err
+	}
+	flag.TotalResurrectNum = int32(dayToResurrect(int64(flag.TotalTime)))
+	flag.TotalMaskNum = int32(maskNum)
 	flag.ID = uuid.NewV4().String()
 	flag.Status = "running"
 	err = database.GetDB().Model(&flag).Create(&flag).Error

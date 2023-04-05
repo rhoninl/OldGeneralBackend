@@ -7,8 +7,10 @@ import (
 
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	flagspb "github.com/leepala/OldGeneralBackend/Proto/flags"
+	vippb "github.com/leepala/OldGeneralBackend/Proto/vip"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	"github.com/leepala/OldGeneralBackend/pkg/vip"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
 )
@@ -73,4 +75,31 @@ func getResurrectUsedNum(txn *gorm.DB, flagId string) (int64, error) {
 		return 0, err
 	}
 	return counter, nil
+}
+
+func dayToMaskNum(userId string, day int64) (int64, error) {
+	req := &vippb.GetVipStatusRequest{
+		RequestId:   uuid.NewV4().String(),
+		RequestTime: time.Now().UnixMicro(),
+		UserId:      userId,
+	}
+	resp, err := vip.GetClient().GetVipStatus(context.Background(), req)
+	if err != nil {
+		log.Println("error getting vip status", err)
+		return 0, err
+	}
+	isVIP := resp.EndTime < time.Now().UnixMicro()
+	maskNum := day / 7
+	if isVIP {
+		maskNum *= 2
+	}
+
+	return maskNum, nil
+}
+
+func dayToResurrect(day int64) int64 {
+	if day >= 30 {
+		return 1
+	}
+	return 0
 }
