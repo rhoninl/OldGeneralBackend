@@ -88,7 +88,7 @@ func dayToMaskNum(userId string, day int64) (int64, error) {
 		log.Println("error getting vip status", err)
 		return 0, err
 	}
-	isVIP := resp.EndTime < time.Now().UnixMicro()
+	isVIP := resp.EndTime > time.Now().UnixMicro()
 	maskNum := day / 7
 	if isVIP {
 		maskNum *= 2
