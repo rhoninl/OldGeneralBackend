@@ -88,6 +88,7 @@ func askForSkip(ctx context.Context, txn *gorm.DB, in *flags.AskForSkipRequest) 
 			Content:     "今天放假，不打卡",
 			CurrentTime: int64(len(signinList)) + 1,
 			CreatedAt:   helper.GetTimeStamp(),
+			IsSkip:      1,
 		},
 	}
 	_, err = signinFlag(ctx, txn, signinRequest)

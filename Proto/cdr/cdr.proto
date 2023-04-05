@@ -82,6 +82,7 @@ message SignInInfo {
     string content = 4;
     int64 current_time = 5;
     int64 created_at = 6;
+    int64 is_skip = 7;
 }
 
 message SiegeInfo {
