@@ -3,6 +3,8 @@ package helper
 import (
 	"math/rand"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func GenerateRandInt(length int) string {
@@ -12,4 +14,12 @@ func GenerateRandInt(length int) string {
 		result = append(result, rune(rand.Intn(10)+48))
 	}
 	return string(result)
+}
+
+func GenerateUUID() string {
+	return uuid.NewV4().String()
+}
+
+func GetTimeStamp() int64 {
+	return time.Now().UnixMicro()
 }

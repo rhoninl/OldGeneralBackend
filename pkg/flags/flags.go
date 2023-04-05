@@ -20,6 +20,7 @@ import (
 
 const (
 	listenPort = ":30001"
+	holidayUrl = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/others/holiday.jpg"
 )
 
 type server struct {
@@ -129,7 +130,7 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 
 	f.UserAvatar = userInfoReply.UserInfo.Avatar
 	f.UserName = userInfoReply.UserInfo.Name
-	f.SignUpInfo = getSignInlist(flag.ID)
+	f.SignUpInfo = getSignInlist(txn, flag.ID)
 	var err1, err2 error
 	f.UsedMaskNum, err1 = getSkipCardUsedNum(txn, flag.ID)
 	f.UsedResurrectNum, err2 = getResurrectUsedNum(txn, flag.ID)
