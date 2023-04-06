@@ -135,7 +135,8 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 	var err1, err2 error
 	f.UsedMaskNum, err1 = getSkipCardUsedNum(txn, flag.ID)
 	f.UsedResurrectNum, err2 = getResurrectUsedNum(txn, flag.ID)
-	err = errors.Join(err1, err2)
+	err3 := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Count(&f.CurrentTime).Error
+	err = errors.Join(err1, err2, err3)
 	if err != nil {
 		log.Println("error getting used props info", err)
 		return nil, err
