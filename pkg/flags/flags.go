@@ -55,6 +55,7 @@ func (s *server) CreateFlag(ctx context.Context, in *flagspb.CreateFlagRequest) 
 	flag.TotalResurrectNum = int32(dayToResurrect(int64(flag.TotalTime)))
 	flag.TotalMaskNum = int32(maskNum)
 	flag.ID = uuid.NewV4().String()
+	flag.CreatedAt = helper.GetTimeStamp()
 	flag.Status = "running"
 	err = database.GetDB().Model(&flag).Create(&flag).Error
 	if err != nil {
