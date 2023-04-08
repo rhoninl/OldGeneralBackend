@@ -263,7 +263,8 @@ func updateRunningFlagStatus(txn *gorm.DB, flag *model.FlagInfo) error {
 		return err
 	}
 	if int64(flag.TotalResurrectNum) > resurrectUsedNum {
-		// status update to Resurrect
+		log.Println("flag can be resurrected, flagId: ", flag.ID)
+		return updateStatusToResurrect(txn, flag.ID)
 	}
 	flag.Status = "failed"
 	err = txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error

@@ -2,6 +2,7 @@ package flags
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -101,6 +102,22 @@ func askForSkip(ctx context.Context, txn *gorm.DB, in *flags.AskForSkipRequest) 
 		ReplyTime: helper.GetTimeStamp(),
 	}
 	return reply, nil
+}
+
+func updateStatusToResurrect(txn *gorm.DB, flagId string) error {
+	var flagInfo model.FlagInfo
+	err := txn.Model(&flagInfo).Where("id = ?", flagId).Find(&flagInfo).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return err
+	}
+	if flagId != "running" {
+		log.Println("flag is not running")
+		return errors.New("flag is not running")
+	}
+	flagInfo.Status = "resurrect"
+	err = txn.Model(&flagInfo).Where("id = ?", flagId).Save(&flagInfo).Error
+	return err
 }
 
 func dayToMaskNum(userId string, day int64) (int64, error) {
