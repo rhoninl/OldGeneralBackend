@@ -104,19 +104,19 @@ func askForSkip(ctx context.Context, txn *gorm.DB, in *flags.AskForSkipRequest) 
 	return reply, nil
 }
 
-func updateStatusToResurrect(txn *gorm.DB, flagId string) error {
+func updateStatusToResurrect(txn *gorm.DB, info model.FlagInfo) error {
 	var flagInfo model.FlagInfo
-	err := txn.Model(&flagInfo).Where("id = ?", flagId).Find(&flagInfo).Error
+	err := txn.Model(&flagInfo).Where("id = ?", info.ID).Find(&flagInfo).Error
 	if err != nil {
 		log.Println("error getting flag info", err)
 		return err
 	}
-	if flagId != "running" {
+	if info.Status != "running" {
 		log.Println("flag is not running")
 		return errors.New("flag is not running")
 	}
 	flagInfo.Status = "resurrect"
-	err = txn.Model(&flagInfo).Where("id = ?", flagId).Save(&flagInfo).Error
+	err = txn.Model(&flagInfo).Where("id = ?", info.ID).Save(&flagInfo).Error
 	return err
 }
 
