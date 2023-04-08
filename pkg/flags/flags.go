@@ -14,8 +14,10 @@ import (
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
 	"github.com/leepala/OldGeneralBackend/pkg/user"
+	"github.com/robfig/cron/v3"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
+	"gorm.io/gorm"
 )
 
 const (
@@ -28,6 +30,8 @@ type server struct {
 }
 
 func StartAndListen() {
+	startCronTabJob()
+
 	lis, err := net.Listen("tcp", listenPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -215,3 +219,89 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 }
 
 // TODO: need to implement search flag
+
+func startCronTabJob() {
+	c := cron.New()
+	c.AddFunc("0 16 * * *", UpdateAllFlagStatus)
+	c.Start()
+}
+
+func UpdateAllFlagStatus() {
+	log.Println("start to update all flag status")
+	txno := database.GetDB()
+	var flags []model.FlagInfo
+	err := txno.Model(&model.FlagInfo{}).Where("status in ('running','pending','resurrect')").Find(&flags).Error
+	if err != nil {
+		log.Println("error getting flags", err)
+		return
+	}
+
+	for _, flag := range flags {
+		txn := txno.Begin()
+		var err error
+		switch flag.Status {
+		case "running":
+			err = updateRunningFlagStatus(txn, &flag)
+		case "pending":
+			err = updatePendingFlagStatus(txn, &flag)
+		case "resurrect":
+			err = updateResurrectFlagStatus(txn, &flag)
+		}
+		helper.TransactionHandle(txn, &err)
+	}
+}
+
+func updateRunningFlagStatus(txn *gorm.DB, flag *model.FlagInfo) error {
+	startZeroTime := time.UnixMicro(flag.StartTime).Add(-8 * time.Hour)
+	currentSigninNum := len(getSignInlist(txn, flag.ID))
+	if startZeroTime.Add(24*time.Hour*time.Duration(currentSigninNum)+1).Sub(time.Now()) >= 0 {
+		return nil
+	}
+	resurrectUsedNum, err := getResurrectUsedNum(txn, flag.ID)
+	if err != nil {
+		log.Println("error getting resurrect used num", err)
+		return err
+	}
+	if int64(flag.TotalResurrectNum) > resurrectUsedNum {
+		// status update to Resurrect
+	}
+	flag.Status = "failed"
+	err = txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return err
+	}
+	return nil
+}
+
+func updatePendingFlagStatus(txn *gorm.DB, flag *model.FlagInfo) error {
+	startZeroTime := time.UnixMicro(flag.StartTime).Add(-8 * time.Hour)
+	nextSignInTine := startZeroTime.Sub(time.Now().Add(24 * time.Hour))
+	if nextSignInTine < 0 && nextSignInTine > 24*time.Hour {
+		log.Println("no need to update pending flag, flagId: ", flag.ID)
+		return nil
+	}
+	flag.Status = "running"
+	err := txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return err
+	}
+	return nil
+}
+
+func updateResurrectFlagStatus(txn *gorm.DB, flag *model.FlagInfo) error {
+	startZeroTime := time.UnixMicro(flag.StartTime).Add(-8 * time.Hour)
+	currentSigninNum := len(getSignInlist(txn, flag.ID))
+	if startZeroTime.Add(24*time.Hour*time.Duration(currentSigninNum)).Sub(time.Now()) >= 0 {
+		flag.Status = "running"
+	} else {
+		flag.Status = "failed"
+	}
+	err := txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return err
+	}
+	return nil
+}
