@@ -170,6 +170,12 @@ func resurrectFlag(ctx context.Context, txn *gorm.DB, in *flags.ResurrectRequest
 		return nil, err
 	}
 
+	err = txn.Model(&model.FlagInfo{}).Where("id = ?", in.FlagId).Update("status", "running").Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return nil, err
+	}
+
 	reply := &flagspb.ResurrectReply{
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),
