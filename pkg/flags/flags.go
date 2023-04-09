@@ -21,8 +21,9 @@ import (
 )
 
 const (
-	listenPort = ":30001"
-	holidayUrl = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/others/holiday.jpg"
+	listenPort   = ":30001"
+	holidayUrl   = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/others/holiday.jpg"
+	resurrectUrl = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/others/resurrect.jpeg"
 )
 
 type server struct {

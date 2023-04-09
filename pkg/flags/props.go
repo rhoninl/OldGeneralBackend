@@ -25,25 +25,11 @@ func (s *server) AskForSkip(ctx context.Context, in *flagspb.AskForSkipRequest) 
 	return askForSkip(ctx, txn, in)
 }
 
-func (s *server) Resurrect(ctx context.Context, in *flagspb.ResurrectRequest) (*flagspb.ResurrectReply, error) {
+func (s *server) Resurrect(ctx context.Context, in *flagspb.ResurrectRequest) (reply *flagspb.ResurrectReply, err error) {
 	log.Println("resurrect request", in)
-	var prop = &model.Prop{
-		ID:     uuid.NewV4().String(),
-		FlagID: in.FlagId,
-		Type:   int32(cdr.PropType_resurrection),
-		UseAt:  time.Now().UnixMicro(),
-	}
-	err := database.GetDB().Model(prop).Save(prop).Error
-	if err != nil {
-		log.Println("error saving prop info", err)
-		return nil, err
-	}
-
-	reply := &flagspb.ResurrectReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-	}
-	return reply, nil
+	txn := database.GetDB().Begin()
+	helper.TransactionHandle(txn, &err)
+	return resurrectFlag(ctx, txn, in)
 }
 
 func getSkipCardUsedNum(txn *gorm.DB, flagId string) (int64, error) {
@@ -118,6 +104,77 @@ func updateStatusToResurrect(txn *gorm.DB, info *model.FlagInfo) error {
 	flagInfo.Status = "resurrect"
 	err = txn.Model(&flagInfo).Where("id = ?", info.ID).Save(&flagInfo).Error
 	return err
+}
+
+func resurrectFlag(ctx context.Context, txn *gorm.DB, in *flags.ResurrectRequest) (*flags.ResurrectReply, error) {
+	log.Println("resurrect request", in)
+
+	// get flagInfo
+	var flagInfo *model.FlagInfo
+	err := txn.Model(&model.FlagInfo{}).Where("id = ?", in.FlagId).Find(&flagInfo).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return nil, err
+	}
+	lastSignInTime, need := needSignInToday(txn, flagInfo)
+	if !need {
+		log.Println("flag cannot resurrect")
+		return nil, errors.New("flag cannot resurrect")
+	}
+
+	// check if user has resurrect card
+	resurrectUsedNum, err := getResurrectUsedNum(txn, in.FlagId)
+	if err != nil {
+		log.Println("error getting resurrect used num", err)
+		return nil, err
+	}
+
+	if resurrectUsedNum >= int64(flagInfo.TotalResurrectNum) {
+		log.Println("resurrect card used up")
+		return nil, errors.New("resurrect card used up")
+	}
+
+	// try to signin
+	resurrectSignin := &cdr.SignInInfo{
+		Id:          helper.GenerateUUID(),
+		FlagId:      in.FlagId,
+		CreatedAt:   helper.GetTimeStamp(),
+		CurrentTime: lastSignInTime + 1,
+		IsSkip:      2,
+		Content:     "使用了复活卡",
+		PictureUrl:  resurrectUrl,
+	}
+	signinRequest := &flagspb.SignInFlagRequest{
+		RequestId:   in.RequestId,
+		RequestTime: in.RequestTime,
+		Info:        resurrectSignin,
+	}
+
+	_, err = signinFlag(ctx, txn, signinRequest)
+	if err != nil {
+		log.Println("error signing in", err)
+		return nil, err
+	}
+
+	// add record of resurrect card
+	var prop = &model.Prop{
+		ID:     uuid.NewV4().String(),
+		FlagID: in.FlagId,
+		Type:   int32(cdr.PropType_resurrection),
+		UseAt:  time.Now().UnixMicro(),
+	}
+
+	err = database.GetDB().Model(prop).Save(prop).Error
+	if err != nil {
+		log.Println("error saving prop info", err)
+		return nil, err
+	}
+
+	reply := &flagspb.ResurrectReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}
+	return reply, nil
 }
 
 func dayToMaskNum(userId string, day int64) (int64, error) {

@@ -109,3 +109,20 @@ func getSignInlist(txn *gorm.DB, flagId string) []*cdr.SignInInfo {
 	}
 	return signList
 }
+
+func needSignInToday(txn *gorm.DB, flagInfo *model.FlagInfo) (int64, bool) {
+	// get signin count
+	var counter int64
+	err := txn.Model(&model.SignIn{}).Where("flag_id = ?", flagInfo.ID).Count(&counter).Error
+	if err != nil {
+		log.Println("error getting sign in info", err)
+		return 0, false
+	}
+
+	// check if need to sign in today
+	if int64(flagInfo.TotalTime) == counter {
+		return 0, false
+	}
+	nextSigninTime := time.UnixMicro(flagInfo.CreatedAt).Truncate(24 * time.Hour).Add(-8 * time.Hour).Add(time.Duration(counter) * time.Hour * 24)
+	return counter, nextSigninTime.Before(time.Now())
+}
