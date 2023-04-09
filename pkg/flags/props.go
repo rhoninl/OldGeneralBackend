@@ -28,7 +28,7 @@ func (s *server) AskForSkip(ctx context.Context, in *flagspb.AskForSkipRequest) 
 func (s *server) Resurrect(ctx context.Context, in *flagspb.ResurrectRequest) (reply *flagspb.ResurrectReply, err error) {
 	log.Println("resurrect request", in)
 	txn := database.GetDB().Begin()
-	helper.TransactionHandle(txn, &err)
+	defer helper.TransactionHandle(txn, &err)
 	return resurrectFlag(ctx, txn, in)
 }
 
@@ -164,7 +164,7 @@ func resurrectFlag(ctx context.Context, txn *gorm.DB, in *flags.ResurrectRequest
 		UseAt:  time.Now().UnixMicro(),
 	}
 
-	err = database.GetDB().Model(prop).Save(prop).Error
+	err = txn.Model(prop).Save(prop).Error
 	if err != nil {
 		log.Println("error saving prop info", err)
 		return nil, err
