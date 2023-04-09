@@ -32,6 +32,13 @@ func (s *server) Resurrect(ctx context.Context, in *flagspb.ResurrectRequest) (r
 	return resurrectFlag(ctx, txn, in)
 }
 
+func (s *server) WaiverResurrect(ctx context.Context, in *flagspb.WaiverResurrectRequest) (reply *flagspb.WaiverResurrectReply, err error) {
+	log.Println("waiver resurrect request", in)
+	txn := database.GetDB().Begin()
+	defer helper.TransactionHandle(txn, &err)
+	return waiverResurrect(ctx, txn, in)
+}
+
 func getSkipCardUsedNum(txn *gorm.DB, flagId string) (int64, error) {
 	var counter int64
 	err := txn.Model(&model.Prop{}).Where("flag_id = ? and type = ?", flagId, cdr.PropType_skip).Count(&counter).Error
@@ -181,6 +188,29 @@ func resurrectFlag(ctx context.Context, txn *gorm.DB, in *flags.ResurrectRequest
 		ReplyTime: time.Now().UnixMicro(),
 	}
 	return reply, nil
+}
+
+func waiverResurrect(ctx context.Context, txn *gorm.DB, in *flagspb.WaiverResurrectRequest) (*flagspb.WaiverResurrectReply, error) {
+	log.Println("waiver resurrect request", in)
+
+	// get flagInfo
+	var flagInfo *model.FlagInfo
+	err := txn.Model(&model.FlagInfo{}).Where("id = ?", in.FlagId).Find(&flagInfo).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return nil, err
+	}
+	if flagInfo.Status != "resurrect" {
+		log.Println("flag is not in resurrect status")
+		return nil, errors.New("flag is not in resurrect status")
+	}
+
+	err = txn.Model(&model.FlagInfo{}).Where("id = ?", in.FlagId).Update("status", "failed").Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return nil, err
+	}
+	return nil, err
 }
 
 func dayToMaskNum(userId string, day int64) (int64, error) {

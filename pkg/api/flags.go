@@ -82,3 +82,8 @@ func (s *server) Resurrect(ctx context.Context, in *flagspb.ResurrectRequest) (*
 	log.Println("resurrect request", in)
 	return flags.GetClient().Resurrect(ctx, in)
 }
+
+func (s *server) WaiverResurrect(ctx context.Context, in *flagspb.WaiverResurrectRequest) (*flagspb.WaiverResurrectReply, error) {
+	log.Println("waiver resurrect request", in)
+	return flags.GetClient().WaiverResurrect(ctx, in)
+}
