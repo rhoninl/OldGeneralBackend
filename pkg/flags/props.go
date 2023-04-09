@@ -104,7 +104,7 @@ func askForSkip(ctx context.Context, txn *gorm.DB, in *flags.AskForSkipRequest) 
 	return reply, nil
 }
 
-func updateStatusToResurrect(txn *gorm.DB, info model.FlagInfo) error {
+func updateStatusToResurrect(txn *gorm.DB, info *model.FlagInfo) error {
 	var flagInfo model.FlagInfo
 	err := txn.Model(&flagInfo).Where("id = ?", info.ID).Find(&flagInfo).Error
 	if err != nil {
