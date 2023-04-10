@@ -161,8 +161,8 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 
 	var lastSignInTimeStamp int64 = time.Now().UnixMicro() + 1
 	if in.LastSigninId != "" {
-		var lastSignInId model.FlagInfo
-		err := database.GetDB().Model(&model.FlagInfo{}).Where("id = ?", in.LastSigninId).Find(&lastSignInId).Error
+		var lastSignInId model.SignIn
+		err := database.GetDB().Model(&model.SignIn{}).Where("id = ?", in.LastSigninId).Find(&lastSignInId).Error
 		if err != nil {
 			log.Println("error getting last sign in info", err)
 			return nil, err
