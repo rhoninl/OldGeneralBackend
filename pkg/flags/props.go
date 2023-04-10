@@ -210,7 +210,13 @@ func waiverResurrect(ctx context.Context, txn *gorm.DB, in *flagspb.WaiverResurr
 		log.Println("error updating flag status", err)
 		return nil, err
 	}
-	return nil, err
+
+	reply := &flagspb.WaiverResurrectReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}
+
+	return reply, nil
 }
 
 func dayToMaskNum(userId string, day int64) (int64, error) {
