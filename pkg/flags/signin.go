@@ -70,6 +70,11 @@ func signinFlag(ctx context.Context, txn *gorm.DB, in *flagspb.SignInFlagRequest
 
 	if in.Info.CurrentTime == int64(flag.TotalTime) {
 		flag.Status = "finished"
+		err := challengeSuccess(ctx, txn, flag.ID)
+		if err != nil {
+			log.Println("error challenge success", err)
+			return nil, err
+		}
 	}
 
 	signinInfo.ID = in.Info.Id
