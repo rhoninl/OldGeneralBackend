@@ -211,6 +211,12 @@ func waiverResurrect(ctx context.Context, txn *gorm.DB, in *flagspb.WaiverResurr
 		return nil, err
 	}
 
+	err = distributeMoney(ctx, txn, in.FlagId)
+	if err != nil {
+		log.Println("error distributing money", err)
+		return nil, err
+	}
+
 	reply := &flagspb.WaiverResurrectReply{
 		RequestId: in.RequestId,
 		ReplyTime: time.Now().UnixMicro(),
