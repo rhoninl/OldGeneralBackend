@@ -54,4 +54,5 @@ service api {
     // flags.props
     rpc AskForSkip(flags.AskForSkipRequest) returns (flags.AskForSkipReply) {}
     rpc Resurrect(flags.ResurrectRequest) returns (flags.ResurrectReply) {}
+    rpc WaiverResurrect(flags.WaiverResurrectRequest) returns(flags.WaiverResurrectReply) {}
 }

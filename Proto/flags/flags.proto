@@ -26,6 +26,7 @@ service flags {
     // props
     rpc AskForSkip(AskForSkipRequest) returns (AskForSkipReply) {}
     rpc Resurrect(ResurrectRequest) returns (ResurrectReply) {}
+    rpc WaiverResurrect(WaiverResurrectRequest) returns(WaiverResurrectReply){}
 }
 
 message SearchMyFlagRequest {
@@ -211,4 +212,15 @@ message GetMySiegeNumReply {
     string request_id = 1;
     int64 reply_time = 2;
     int64 num = 3;
+}
+
+message WaiverResurrectRequest {
+    string request_id = 1;
+    int64 request_time = 2;
+    string flag_id = 3;
+}
+
+message WaiverResurrectReply {
+    string request_id = 1;
+    int64 reply_time = 2;
 }

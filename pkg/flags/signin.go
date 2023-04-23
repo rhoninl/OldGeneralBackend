@@ -11,56 +11,13 @@ import (
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
+	"gorm.io/gorm"
 )
 
 func (s *server) SignInFlag(ctx context.Context, in *flagspb.SignInFlagRequest) (*flagspb.SignInFlagReply, error) {
 	log.Println("sign in flag request", in.RequestId, in.Info.FlagId)
-
-	signinInfo, err := helper.TypeConverter[model.SignIn](in.Info)
-	if err != nil {
-		log.Println("error converting flag", err)
-		return nil, err
-	}
-	var flag model.FlagInfo
-	err = database.GetDB().Model(&flag).Where("id = ?", in.Info.FlagId).Find(&flag).Error
-	if err != nil {
-		log.Println("error getting flag info", err)
-		return nil, err
-	}
-
-	var counter int64
-	err = database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Where("current_time = ?", in.Info.CurrentTime).Count(&counter).Error
-	if err != nil {
-		log.Println("error getting sign in info", err)
-		return nil, err
-	}
-
-	if counter > 0 {
-		log.Println("already signed in")
-		return nil, errors.New("already signed in")
-	}
-
-	if in.Info.CurrentTime == int64(flag.TotalTime) {
-		flag.Status = "finished"
-	}
-
-	signinInfo.ID = in.Info.Id
-	signinInfo.CreatedAt = time.Now().UnixMicro()
-	signinInfo.UserID = flag.UserID
-	signinInfo.TotalTime = flag.TotalTime
-
-	err = database.GetDB().Model(&signinInfo).Save(&signinInfo).Error
-	if err != nil {
-		log.Println("error saving sign in info", err)
-		return nil, err
-	}
-
-	var reply = &flagspb.SignInFlagReply{
-		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
-	}
-
-	return reply, nil
+	txn := database.GetDB()
+	return signinFlag(ctx, txn, in)
 }
 
 func (s *server) GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoRequest) (*flagspb.GetSignInInfoReply, error) {
@@ -80,15 +37,68 @@ func (s *server) GetSignInInfo(ctx context.Context, in *flagspb.GetSignInInfoReq
 	}
 	reply := &flagspb.GetSignInInfoReply{
 		RequestId: in.RequestId,
-		ReplyTime: time.Now().UnixMicro(),
+		ReplyTime: helper.GetTimeStamp(),
 		Info:      signIn,
 	}
 	return reply, nil
 }
 
-func getSignInlist(flagId string) []*cdr.SignInInfo {
+func signinFlag(ctx context.Context, txn *gorm.DB, in *flagspb.SignInFlagRequest) (*flagspb.SignInFlagReply, error) {
+	signinInfo, err := helper.TypeConverter[model.SignIn](in.Info)
+	if err != nil {
+		log.Println("error converting flag", err)
+		return nil, err
+	}
+	var flag model.FlagInfo
+	err = txn.Where("id = ?", in.Info.FlagId).Find(&flag).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return nil, err
+	}
+
+	var counter int64
+	err = txn.Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Where("current_time = ?", in.Info.CurrentTime).Count(&counter).Error
+	if err != nil {
+		log.Println("error getting sign in info", err)
+		return nil, err
+	}
+
+	if counter > 0 {
+		log.Println("already signed in")
+		return nil, errors.New("already signed in")
+	}
+
+	if in.Info.CurrentTime == int64(flag.TotalTime) {
+		flag.Status = "finished"
+		err := challengeSuccess(ctx, txn, flag.ID)
+		if err != nil {
+			log.Println("error challenge success", err)
+			return nil, err
+		}
+	}
+
+	signinInfo.ID = in.Info.Id
+	signinInfo.CreatedAt = time.Now().UnixMicro()
+	signinInfo.UserID = flag.UserID
+	signinInfo.TotalTime = flag.TotalTime
+
+	err = txn.Model(&signinInfo).Save(&signinInfo).Error
+	if err != nil {
+		log.Println("error saving sign in info", err)
+		return nil, err
+	}
+
+	var reply = &flagspb.SignInFlagReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}
+
+	return reply, nil
+}
+
+func getSignInlist(txn *gorm.DB, flagId string) []*cdr.SignInInfo {
 	var signInfos []*model.SignIn
-	err := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flagId).Order("current_time DESC").Find(&signInfos).Error
+	err := txn.Model(&model.SignIn{}).Where("flag_id = ?", flagId).Order("`current_time` DESC").Find(&signInfos).Error
 	if err != nil {
 		log.Println("error getting sign in info", err)
 		return nil
@@ -103,4 +113,21 @@ func getSignInlist(flagId string) []*cdr.SignInInfo {
 		signList = append(signList, flagItem)
 	}
 	return signList
+}
+
+func needSignInToday(txn *gorm.DB, flagInfo *model.FlagInfo) (int64, bool) {
+	// get signin count
+	var counter int64
+	err := txn.Model(&model.SignIn{}).Where("flag_id = ?", flagInfo.ID).Count(&counter).Error
+	if err != nil {
+		log.Println("error getting sign in info", err)
+		return 0, false
+	}
+
+	// check if need to sign in today
+	if int64(flagInfo.TotalTime) == counter {
+		return 0, false
+	}
+	nextSigninTime := time.UnixMicro(flagInfo.CreatedAt).Truncate(24 * time.Hour).Add(-8 * time.Hour).Add(time.Duration(counter) * time.Hour * 24)
+	return counter, nextSigninTime.Before(time.Now())
 }

@@ -44,6 +44,7 @@ Create Table
         `total_time` INT NOT NULL,
         `content` varchar(255) NOT NULL,
         `picture_url` text NOT NULL,
+        `is_skip` INT NOT NULL DEFAULT 0,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 

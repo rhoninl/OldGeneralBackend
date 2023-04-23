@@ -3,6 +3,7 @@ package flags
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"time"
@@ -10,16 +11,22 @@ import (
 	"github.com/leepala/OldGeneralBackend/Proto/cdr"
 	flagspb "github.com/leepala/OldGeneralBackend/Proto/flags"
 	userpb "github.com/leepala/OldGeneralBackend/Proto/user"
+	walletpb "github.com/leepala/OldGeneralBackend/Proto/wallet"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
 	"github.com/leepala/OldGeneralBackend/pkg/user"
+	"github.com/leepala/OldGeneralBackend/pkg/wallet"
+	"github.com/robfig/cron/v3"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
+	"gorm.io/gorm"
 )
 
 const (
-	listenPort = ":30001"
+	listenPort   = ":30001"
+	holidayUrl   = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/others/holiday.jpg"
+	resurrectUrl = "https://oldgeneral.obs.cn-north-4.myhuaweicloud.com:443/others/resurrect.jpeg"
 )
 
 type server struct {
@@ -27,6 +34,8 @@ type server struct {
 }
 
 func StartAndListen() {
+	startCronTabJob()
+
 	lis, err := net.Listen("tcp", listenPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -46,7 +55,15 @@ func (s *server) CreateFlag(ctx context.Context, in *flagspb.CreateFlagRequest) 
 		log.Println("error converting flag", err)
 		return nil, err
 	}
+	maskNum, err := dayToMaskNum(flag.UserID, int64(flag.TotalTime))
+	if err != nil {
+		log.Println("error converting day to mask num", err)
+		return nil, err
+	}
+	flag.TotalResurrectNum = int32(dayToResurrect(int64(flag.TotalTime)))
+	flag.TotalMaskNum = int32(maskNum)
 	flag.ID = uuid.NewV4().String()
+	flag.CreatedAt = helper.GetTimeStamp()
 	flag.Status = "running"
 	err = database.GetDB().Model(&flag).Create(&flag).Error
 	if err != nil {
@@ -122,11 +139,12 @@ func (s *server) GetFlagDetail(ctx context.Context, in *flagspb.GetFlagDetailReq
 
 	f.UserAvatar = userInfoReply.UserInfo.Avatar
 	f.UserName = userInfoReply.UserInfo.Name
-	f.SignUpInfo = getSignInlist(flag.ID)
+	f.SignUpInfo = getSignInlist(txn, flag.ID)
 	var err1, err2 error
 	f.UsedMaskNum, err1 = getSkipCardUsedNum(txn, flag.ID)
 	f.UsedResurrectNum, err2 = getResurrectUsedNum(txn, flag.ID)
-	err = errors.Join(err1, err2)
+	err3 := database.GetDB().Model(&model.SignIn{}).Where("flag_id = ?", flag.ID).Count(&f.CurrentTime).Error
+	err = errors.Join(err1, err2, err3)
 	if err != nil {
 		log.Println("error getting used props info", err)
 		return nil, err
@@ -146,8 +164,8 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 
 	var lastSignInTimeStamp int64 = time.Now().UnixMicro() + 1
 	if in.LastSigninId != "" {
-		var lastSignInId model.FlagInfo
-		err := database.GetDB().Model(&model.FlagInfo{}).Where("id = ?", in.LastSigninId).Find(&lastSignInId).Error
+		var lastSignInId model.SignIn
+		err := database.GetDB().Model(&model.SignIn{}).Where("id = ?", in.LastSigninId).Find(&lastSignInId).Error
 		if err != nil {
 			log.Println("error getting last sign in info", err)
 			return nil, err
@@ -156,7 +174,7 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 	}
 
 	var signIns []model.SignIn
-	err := database.GetDB().Model(&model.SignIn{}).Where("created_at < ?", lastSignInTimeStamp).Order("created_at DESC").Limit(int(in.PageSize)).Find(&signIns).Error
+	err := database.GetDB().Model(&model.SignIn{}).Where("is_skip = 0").Where("created_at < ?", lastSignInTimeStamp).Order("created_at DESC").Limit(int(in.PageSize)).Find(&signIns).Error
 	if err != nil {
 		log.Println("error getting flag info", err)
 		return nil, err
@@ -205,3 +223,161 @@ func (s *server) FetchFlagSquare(ctx context.Context, in *flagspb.FetchFlagSquar
 }
 
 // TODO: need to implement search flag
+
+func startCronTabJob() {
+	c := cron.New()
+	c.AddFunc("0 16 * * *", UpdateAllFlagStatus)
+	c.Start()
+}
+
+func UpdateAllFlagStatus() {
+	log.Println("start to update all flag status")
+	ctx := context.Background()
+	txno := database.GetDB()
+	var flags []model.FlagInfo
+	err := txno.Model(&model.FlagInfo{}).Where("status in ('running','pending','resurrect')").Find(&flags).Error
+	if err != nil {
+		log.Println("error getting flags", err)
+		return
+	}
+
+	for _, flag := range flags {
+		txn := txno.Begin()
+		var err error
+		switch flag.Status {
+		case "running":
+			err = updateRunningFlagStatus(ctx, txn, &flag)
+		case "pending":
+			err = updatePendingFlagStatus(txn, &flag)
+		case "resurrect":
+			err = updateResurrectFlagStatus(ctx, txn, &flag)
+		}
+		helper.TransactionHandle(txn, &err)
+	}
+}
+
+func updateRunningFlagStatus(ctx context.Context, txn *gorm.DB, flag *model.FlagInfo) error {
+	startZeroTime := time.UnixMicro(flag.StartTime).Add(-8 * time.Hour)
+	currentSigninNum := len(getSignInlist(txn, flag.ID))
+	if startZeroTime.Add(24*time.Hour*time.Duration(currentSigninNum)+1).Sub(time.Now()) >= 0 {
+		return nil
+	}
+	resurrectUsedNum, err := getResurrectUsedNum(txn, flag.ID)
+	if err != nil {
+		log.Println("error getting resurrect used num", err)
+		return err
+	}
+	if int64(flag.TotalResurrectNum) > resurrectUsedNum {
+		log.Println("flag can be resurrected, flagId: ", flag.ID)
+		return updateStatusToResurrect(txn, flag)
+	}
+	flag.Status = "failed"
+	err = txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return err
+	}
+	err = distributeMoney(ctx, txn, flag.ID)
+	if err != nil {
+		log.Println("error distributing money", err.Error())
+		return err
+	}
+	return nil
+}
+
+func updatePendingFlagStatus(txn *gorm.DB, flag *model.FlagInfo) error {
+	startZeroTime := time.UnixMicro(flag.StartTime).Add(-8 * time.Hour)
+	nextSignInTine := startZeroTime.Sub(time.Now().Add(24 * time.Hour))
+	if nextSignInTine < 0 && nextSignInTine > 24*time.Hour {
+		log.Println("no need to update pending flag, flagId: ", flag.ID)
+		return nil
+	}
+	flag.Status = "running"
+	err := txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return err
+	}
+	return nil
+}
+
+func updateResurrectFlagStatus(ctx context.Context, txn *gorm.DB, flag *model.FlagInfo) error {
+	startZeroTime := time.UnixMicro(flag.StartTime).Add(-8 * time.Hour)
+	currentSigninNum := len(getSignInlist(txn, flag.ID))
+	if startZeroTime.Add(24*time.Hour*time.Duration(currentSigninNum)).Sub(time.Now()) >= 0 {
+		flag.Status = "running"
+	} else {
+		flag.Status = "failed"
+		err := distributeMoney(ctx, txn, flag.ID)
+		if err != nil {
+			log.Println("error distributing money", err.Error())
+			return err
+		}
+	}
+	err := txn.Model(&model.FlagInfo{}).Where("id = ?", flag.ID).Save(flag).Error
+	if err != nil {
+		log.Println("error updating flag status", err)
+		return err
+	}
+	return nil
+}
+
+func distributeMoney(ctx context.Context, txn *gorm.DB, flagId string) error {
+	var flagInfo model.FlagInfo
+	err := txn.Model(&flagInfo).Where("id = ?", flagId).Find(&flagInfo).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return err
+	}
+
+	var siegeInfos []model.Siege
+	err = txn.Model(&model.Siege{}).Where("flag_id = ?", flagId).Find(&siegeInfos).Error
+	if err != nil {
+		log.Println("error getting siege info", err)
+		return err
+	}
+
+	oneOfGold := int(flagInfo.ChallengeNum)/(len(siegeInfos)+1) + 10
+	updateGoldRequest := walletpb.UpdateGoldRequest{
+		RequestId:   helper.GenerateUUID(),
+		RequestTime: time.Now().UnixNano(),
+		Content:     fmt.Sprintf("围观成功Flag %s", flagInfo.Name),
+		GoldNum:     int64(oneOfGold),
+	}
+	for _, siegeInfo := range siegeInfos {
+		updateGoldRequest.UserId = siegeInfo.UserID
+		_, err := wallet.GetClient().UpdateGold(ctx, &updateGoldRequest)
+		if err != nil {
+			log.Printf("error to update gold, error: %s", err.Error())
+			continue
+		}
+	}
+
+	return nil
+}
+
+func challengeSuccess(ctx context.Context, txn *gorm.DB, flagId string) error {
+	var flagInfo model.FlagInfo
+	err := txn.Model(&flagInfo).Where("id = ?", flagId).Find(&flagInfo).Error
+	if err != nil {
+		log.Println("error getting flag info", err)
+		return err
+	}
+
+	var siegeInfos []model.Siege
+	err = txn.Model(&model.Siege{}).Where("flag_id = ?", flagId).Find(&siegeInfos).Error
+	if err != nil {
+		log.Println("error getting siege info", err)
+		return err
+	}
+
+	totalGold := int(flagInfo.ChallengeNum) + len(siegeInfos)*10
+	updateGoldRequest := walletpb.UpdateGoldRequest{
+		RequestId:   helper.GenerateUUID(),
+		RequestTime: time.Now().UnixNano(),
+		Content:     fmt.Sprintf("挑战成功: %s ", flagInfo.Name),
+		GoldNum:     int64(totalGold),
+	}
+	_, err = wallet.GetClient().UpdateGold(ctx, &updateGoldRequest)
+	return err
+}

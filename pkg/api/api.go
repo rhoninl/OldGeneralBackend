@@ -22,7 +22,6 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 		token := md.Get(CONTEXT_USER_TOKEN_AUTHORIZATION_STR)
 		if len(token) > 0 {
 			ctx = metadata.AppendToOutgoingContext(ctx, CONTEXT_USER_TOKEN_AUTHORIZATION_STR, token[0])
-			log.Println("api without any token")
 		}
 	} else {
 		log.Println("cannot get authorization")
