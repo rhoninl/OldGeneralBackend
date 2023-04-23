@@ -48,7 +48,7 @@ Create Table
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 Create Table
-    `Wallet` (
+    `wallet` (
         `id` varchar(40) NOT NULL,
         `user_id` varchar(40) NOT NULL,
         `gold_num` BIGINT NOT NULL,

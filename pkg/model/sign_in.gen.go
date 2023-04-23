@@ -16,6 +16,7 @@ type SignIn struct {
 	TotalTime   int32  `gorm:"column:total_time;not null" json:"total_time"`
 	Content     string `gorm:"column:content;not null" json:"content"`
 	PictureURL  string `gorm:"column:picture_url;not null" json:"picture_url"`
+	IsSkip      int32  `gorm:"column:is_skip;not null" json:"is_skip"`
 }
 
 // TableName SignIn's table name

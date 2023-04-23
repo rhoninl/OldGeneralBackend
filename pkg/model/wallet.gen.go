@@ -4,9 +4,9 @@
 
 package model
 
-const TableNameWallet = "Wallet"
+const TableNameWallet = "wallet"
 
-// Wallet mapped from table <Wallet>
+// Wallet mapped from table <wallet>
 type Wallet struct {
 	ID      string `gorm:"column:id;primaryKey" json:"id"`
 	UserID  string `gorm:"column:user_id;not null" json:"user_id"`
