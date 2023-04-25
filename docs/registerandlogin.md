@@ -1,4 +1,4 @@
-```mermaid
+```
 sequenceDiagram
     actor User
     Note left of User: 注册
@@ -33,5 +33,25 @@ sequenceDiagram
         API Server ->> Frontend: 返回登录结果
     end
     Frontend ->> User: 通知登录结果
+```
 
+User Token Management
+
+```mermaid
+flowchart 
+    subgraph Backend
+        API
+        IAM
+        MySQL
+    end
+    subgraph Frontend
+        KeyChain
+        ViewPage
+    end
+
+    ViewPage -->|1. 登录| API -->|2.转发| IAM
+    IAM --> |3.验证| MySQL
+    IAM --> |4.生成Token| API
+    API --> |5.返回Token| ViewPage
+    ViewPage --> |6.保存Token| KeyChain
 ```
