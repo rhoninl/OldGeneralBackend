@@ -1,4 +1,4 @@
-```
+```mermaid
 sequenceDiagram
     actor User
     Note left of User: 注册
