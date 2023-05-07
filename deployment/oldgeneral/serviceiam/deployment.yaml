@@ -46,6 +46,15 @@ spec:
                 secretKeyRef:
                   name: redis-secret
                   key: password
+            - name: EmailUsername
+              value: dmutreehole@163.com
+            - name: EmailType
+              value: smtp.163.com:25
+            - name: EmailPassword
+              valueFrom:
+                secretKeyRef:
+                  name: email-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service
