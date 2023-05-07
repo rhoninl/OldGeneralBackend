@@ -204,6 +204,7 @@ func (s *server) IAMSendMail(ctx context.Context, in *iam.SendMailRequest) (*iam
 
 func sendVerificationCode(ctx context.Context, address string) error {
 	verificationCode := email.GenerateVerificationCode()
+	log.Println(verificationCode)
 	err := email.SendCode(verificationCode, address)
 	if err != nil {
 		log.Println("error to send mail, error: ", err.Error())

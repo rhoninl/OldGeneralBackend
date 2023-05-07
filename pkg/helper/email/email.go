@@ -1,6 +1,7 @@
 package email
 
 import (
+	"log"
 	"math/rand"
 	"net/smtp"
 	"os"
@@ -32,6 +33,7 @@ func sendToMail(user, password, host, to, subject, body string) error {
 	msg := []byte("To: " + to + "\r\nFrom: " + user + ">\r\nSubject: " + subject + "\r\n" + contentType + "\r\n\r\n" + body)
 	sendTo := strings.Split(to, ";")
 	err := smtp.SendMail(host, auth, user, sendTo, msg)
+	log.Println("sent")
 	return err
 }
 
