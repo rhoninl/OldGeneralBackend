@@ -15,6 +15,7 @@ service api {
     rpc IAMLogin(iam.IamLoginRequest) returns (iam.IamLoginReply);
     rpc IAMRegister(iam.CreateUserRequest) returns (iam.CreateUserReply);
     rpc IAMCheckLoginStatus(iam.IamCheckStatusRequest) returns (iam.IamCheckStatusReply);
+    rpc IAMSendMail(iam.SendMailRequest) returns (iam.SendMailReply);
 
     // wallet
     rpc GetCurrentGold(wallet.GetCurrentGoldRequest) returns (wallet.GetCurrentGoldReply);

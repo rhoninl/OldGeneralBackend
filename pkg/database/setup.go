@@ -5,12 +5,16 @@ import (
 	"log"
 	"os"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-var db *gorm.DB
+var (
+	db  *gorm.DB
+	rdb *redis.Client
+)
 
 func setupSql() *gorm.DB {
 	var (
@@ -32,10 +36,26 @@ func setupSql() *gorm.DB {
 	return db
 }
 
+func setupRedis() *redis.Client {
+	opt := &redis.Options{
+		Username: os.Getenv("Redis_USER"),
+		Password: os.Getenv("Redis_PASSWORD"),
+		Addr:     os.Getenv("Redis_ADDRESS"),
+		DB:       0,
+	}
+	return redis.NewClient(opt)
+}
+
 func GetDB() *gorm.DB {
 	if db == nil {
 		db = setupSql()
 	}
-
 	return db
+}
+
+func GetRDB() *redis.Client {
+	if rdb == nil {
+		rdb = setupRedis()
+	}
+	return rdb
 }

@@ -26,3 +26,8 @@ func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStat
 	log.Println("received check login status request", in.RequestId)
 	return iam.GetClient().IAMCheckLoginStatus(ctx, in)
 }
+
+func (s *server) IAMSendMail(ctx context.Context, in *iampb.SendMailRequest) (*iampb.SendMailReply, error) {
+	log.Println("received send mail request", in.RequestId)
+	return iam.GetClient().IAMSendMail(ctx, in)
+}

@@ -39,6 +39,13 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: secret
+            - name: Redis_ADDRESS
+              value: redis-master.database.svc.cluster.local
+            - name: Redis_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service

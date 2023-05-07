@@ -8,6 +8,7 @@ service iam {
     rpc IAMLogin(IamLoginRequest) returns (IamLoginReply);
     rpc IAMRegister(CreateUserRequest) returns (CreateUserReply);
     rpc IAMCheckLoginStatus(IamCheckStatusRequest) returns (IamCheckStatusReply);
+    rpc IAMSendMail(SendMailRequest) returns (SendMailReply);
 }
 
 message CreateUserRequest {
@@ -58,6 +59,7 @@ message IamLoginRequest {
     int64 RequestTime = 2;
     string UserName = 3;
     string Password = 4;
+    string VerificationCode = 5;
 }
 
 message IamLoginReply {
@@ -91,4 +93,15 @@ message IamCheckStatusReply {
     bool IsValid = 3;
     string UserId = 4;
     string Token = 5;
+}
+
+message SendMailRequest {
+    string RequestId = 1;
+    int64 RequestTime = 2;
+    string Address = 3;
+}
+
+message SendMailReply {
+    string RequestId = 1;
+    int64 ReplyTime = 2;
 }

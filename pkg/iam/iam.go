@@ -7,11 +7,13 @@ import (
 	"net"
 	"time"
 
+	"github.com/leepala/OldGeneralBackend/Proto/iam"
 	iampb "github.com/leepala/OldGeneralBackend/Proto/iam"
 	userpb "github.com/leepala/OldGeneralBackend/Proto/user"
 	walletpb "github.com/leepala/OldGeneralBackend/Proto/wallet"
 	"github.com/leepala/OldGeneralBackend/pkg/database"
 	"github.com/leepala/OldGeneralBackend/pkg/helper"
+	"github.com/leepala/OldGeneralBackend/pkg/helper/email"
 	"github.com/leepala/OldGeneralBackend/pkg/model"
 	"github.com/leepala/OldGeneralBackend/pkg/user"
 	"github.com/leepala/OldGeneralBackend/pkg/wallet"
@@ -42,15 +44,18 @@ func StartAndListen() {
 
 func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iampb.IamLoginReply, error) {
 	log.Println("login request", in.RequestId, in.UserName)
-	var user = &model.User{}
-	err := database.GetDB().Model(&user).Where("username = ? and password = ?", in.UserName, in.Password).Find(&user).Error
+	var err error
+	var user *model.User
+	if in.Password != "" {
+		user, err = loginByPassword(ctx, in.UserName, in.Password)
+	} else if in.VerificationCode != "" {
+		user, err = loginByEmail(ctx, in.UserName, in.VerificationCode)
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
-	if user.ID == "" {
-		return nil, errors.New("Cannot find user")
-	}
 	token, err := helper.GenerateToken(user.ID)
 	var reply = &iampb.IamLoginReply{
 		RequestId: in.RequestId,
@@ -60,6 +65,38 @@ func (s *server) IAMLogin(ctx context.Context, in *iampb.IamLoginRequest) (*iamp
 	}
 
 	return reply, nil
+}
+
+func loginByPassword(ctx context.Context, username string, password string) (*model.User, error) {
+	var user = &model.User{}
+	err := database.GetDB().Model(&user).Where("username = ? and password = ?", username, password).Find(&user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if user.ID == "" {
+		return nil, errors.New("Cannot find user")
+	}
+	return user, nil
+}
+
+func loginByEmail(ctx context.Context, address string, verificationCode string) (*model.User, error) {
+	cmd := database.GetRDB().GetDel(ctx, address)
+	if cmd.Val() != verificationCode {
+		return nil, errors.New("wrong verificationCode")
+	}
+
+	var user = &model.User{}
+	var userInfo = &model.UserInfo{}
+	err := database.GetDB().Model(&userInfo).Where("mail = ?").Find(&userInfo).Error
+	if err != nil {
+		return nil, err
+	}
+	if user.ID == "" {
+		return nil, errors.New("User not find")
+	}
+	err = database.GetDB().Model(&user).Where("id = ?").Find(&user).Error
+	return user, err
 }
 
 func (s *server) IAMRegister(ctx context.Context, in *iampb.CreateUserRequest) (*iampb.CreateUserReply, error) {
@@ -149,4 +186,27 @@ func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStat
 		Token:     token,
 	}
 	return reply, nil
+}
+
+func (s *server) IAMSendMail(ctx context.Context, in *iam.SendMailRequest) (*iam.SendMailReply, error) {
+	err := sendVerificationCode(ctx, in.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	return &iam.SendMailReply{
+		RequestId: in.RequestId,
+		ReplyTime: time.Now().UnixMicro(),
+	}, nil
+}
+
+func sendVerificationCode(ctx context.Context, address string) error {
+	verificationCode := email.GenerateVerificationCode()
+	err := email.SendCode(verificationCode, address)
+	if err != nil {
+		return err
+	}
+
+	cmd := database.GetRDB().Set(ctx, address, verificationCode, time.Hour)
+	return cmd.Err()
 }

@@ -16,6 +16,7 @@ Create Table
         `gender` varchar(10) NOT NULL,
         `avatar` text NOT NULL,
         `created_at` BIGINT,
+        `mail` varchar(50) NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
