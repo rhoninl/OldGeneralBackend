@@ -189,8 +189,10 @@ func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStat
 }
 
 func (s *server) IAMSendMail(ctx context.Context, in *iam.SendMailRequest) (*iam.SendMailReply, error) {
+	log.Println("send mail request", in.RequestId)
 	err := sendVerificationCode(ctx, in.Address)
 	if err != nil {
+		log.Println("error to send verification code, error: ", err.Error())
 		return nil, err
 	}
 
@@ -204,6 +206,7 @@ func sendVerificationCode(ctx context.Context, address string) error {
 	verificationCode := email.GenerateVerificationCode()
 	err := email.SendCode(verificationCode, address)
 	if err != nil {
+		log.Println("error to send mail, error: ", err.Error())
 		return err
 	}
 
