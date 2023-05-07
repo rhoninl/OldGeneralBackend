@@ -189,7 +189,7 @@ func (s *server) IAMCheckLoginStatus(ctx context.Context, in *iampb.IamCheckStat
 }
 
 func (s *server) IAMSendMail(ctx context.Context, in *iam.SendMailRequest) (*iam.SendMailReply, error) {
-	log.Println("send mail request", in.RequestId)
+	log.Println("send mail request, address: ", in.Address)
 	err := sendVerificationCode(ctx, in.Address)
 	if err != nil {
 		log.Println("error to send verification code, error: ", err.Error())
