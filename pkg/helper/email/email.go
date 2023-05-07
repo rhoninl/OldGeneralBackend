@@ -32,6 +32,7 @@ func sendToMail(user, password, host, to, subject, body string) error {
 	contentType = "Content-Type: text/html; charset=UTF-8"
 	msg := []byte("To: " + to + "\r\nFrom: " + user + ">\r\nSubject: " + subject + "\r\n" + contentType + "\r\n\r\n" + body)
 	sendTo := strings.Split(to, ";")
+	log.Println(host, auth, user, sendTo, msg)
 	err := smtp.SendMail(host, auth, user, sendTo, msg)
 	log.Println("sent")
 	return err
